@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main',
     'users',
+    'contentmanagment',
     'bootstrap5',
     'django_bootstrap_icons',
 ]

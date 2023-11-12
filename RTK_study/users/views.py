@@ -10,8 +10,7 @@ def registration(request):
 
 def profile(request):
     form = forms.CustumUserChangeForm()
-    form_change_password = forms.CustomPasswordChangeForm()
-    return render(request, 'users/profile.html', {'form': form, 'form_change_password': form_change_password})
+    return render(request, 'users/profile.html', {'form': form})
 
 
 def login_user(request):
@@ -22,3 +21,8 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     return redirect('main:news', permanent=True)
+
+
+def reset_password(request):
+    form = forms.CustomPasswordChangeForm()
+    return render(request, 'users/resetpassword.html', {'form': form})

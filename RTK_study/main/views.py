@@ -50,18 +50,18 @@ def news(request):
     newstopics = models.NewsTopicsModel.objects.order_by('description')
     autors = User.objects.order_by('last_name')
     l = [
-        {'id': 1, 'name': 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure officiis hic cupiditate at impedit nihil necessitatibus ullam perferendis et. Iusto dicta quasi ipsa natus possimus est maiores sunt magnam architecto!', 'img': 'main/news/123.png'},
-        {'id': 2, 'name': 'Новость 2', 'img': 'main/news/234.png'},
-        {'id': 3, 'name': 'Новость 3', 'img': 'main/news/345.png'},
-        {'id': 4, 'name': 'Новость 4', 'img': 'main/news/456.png'},
-        {'id': 5, 'name': 'Новость 5', 'img': 'main/news/123.png'},
-        {'id': 6, 'name': 'Новость 6', 'img': 'main/news/234.png'},
-        {'id': 7, 'name': 'Новость 7', 'img': 'main/news/345.png'},
-        {'id': 8, 'name': 'Новость 8', 'img': 'main/news/456.png'},
-        {'id': 9, 'name': 'Новость 9', 'img': 'main/news/123.png'},
-        {'id': 10, 'name': 'Новость 10', 'img': 'main/news/234.png'},
-        {'id': 11, 'name': 'Новость 11', 'img': 'main/news/345.png'},
-        {'id': 12, 'name': 'Новость 12', 'img': 'main/news/456.png'},
+        {'id': 1, 'name': 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure officiis hic cupiditate at impedit nihil necessitatibus ullam perferendis et. Iusto dicta quasi ipsa natus possimus est maiores sunt magnam architecto!', 'img': 'main/news/6.jpg'},
+        {'id': 2, 'name': 'Новость 2', 'img': 'main/news/1.jpg'},
+        {'id': 3, 'name': 'Новость 3', 'img': 'main/news/2.jpg'},
+        {'id': 4, 'name': 'Новость 4', 'img': 'main/news/3.jpg'},
+        {'id': 5, 'name': 'Новость 5', 'img': 'main/news/4.jpg'},
+        {'id': 6, 'name': 'Новость 6', 'img': 'main/news/5.jpg'},
+        {'id': 7, 'name': 'Новость 7', 'img': 'main/news/6.jpg'},
+        {'id': 8, 'name': 'Новость 8', 'img': 'main/news/1.jpg'},
+        {'id': 9, 'name': 'Новость 9', 'img': 'main/news/2.jpg'},
+        {'id': 10, 'name': 'Новость 10', 'img': 'main/news/3.jpg'},
+        {'id': 11, 'name': 'Новость 11', 'img': 'main/news/4.jpg'},
+        {'id': 12, 'name': 'Новость 12', 'img': 'main/news/5.jpg'},
     ]
     context = { 'newslist': l, 'regions': regions, 'newstopics': newstopics, 'autors': autors}
     return render(request, 'main/news.html', context)
@@ -73,11 +73,6 @@ def new_full(request, id_new):
                'description': 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure officiis hic cupiditate at impedit nihil necessitatibus ullam perferendis et. Iusto dicta quasi ipsa natus possimus est maiores sunt magnam architecto!',
                'autor': 'Автор Б.В.',
                'datePublication': datetime.date(2023, 11, 8),
-               'mainImage': 'main/news/123.png',
-               'addititionalMaterials': ['main/news/234.png', 'main/news/345.png', 'main/news/456.png'],}
+               'mainImage': 'main/news/1.jpg',
+               'addititionalMaterials': ['main/news/2.jpg', 'main/news/3.jpg', 'main/news/4.jpg', 'main/news/5.jpg', 'main/news/6.jpg'],}
     return render(request, 'main/newFull.html', context)
-
-def addnews(request):
-    form = forms.AddNewsForm()
-    return render(request, 'main/addnews.html', {'form': form})
-

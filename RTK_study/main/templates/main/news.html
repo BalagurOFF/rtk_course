@@ -53,7 +53,7 @@
         {% for news in newslist %}
         <div class="col">
             <div class="card h-100">
-                <img src="{% static news.img %}" class="card-img-top" alt="{{ news.img }}">
+                <img src="{% static news.img %}" class="card-img-top" alt="{{ news.img }}" width="250px">
                 <div class="card-body ">
                     <h6 class="card-text">{{ news.name|truncatewords:10 }}</h6>
                 </div>

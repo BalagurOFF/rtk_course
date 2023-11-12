@@ -12,10 +12,13 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" style="background-color: #C5E1D4;" aria-labelledby="bd-versions">
                     <li>
-                        <a class="dropdown-item" href="{% url 'main:addNews' %}">Добавить новость</a>
+                        <a class="dropdown-item" href="{% url 'contentmanagment:addNews' %}">Добавить новость</a>
                     </li>
                     <li>
                         <a class="dropdown-item" href="{% url 'users:profile' %}">Личный кабинет</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'users:resetpassword' %}">Сменить пароль</a>
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>

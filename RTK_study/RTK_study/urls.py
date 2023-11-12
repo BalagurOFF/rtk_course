@@ -21,7 +21,8 @@ import main
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(('main.urls', 'main'), namespace='main')),
-    path('', include(('users.urls', 'users'), namespace='users')),
+    path('users/', include(('users.urls', 'users'), namespace='users')),
+    path('contentmanagment/', include(('contentmanagment.urls', 'contentmanagment'), namespace='contentmanagment')),
 ]
 #if bool(settings.DEBUG):
 #    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

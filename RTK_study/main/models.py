@@ -10,6 +10,8 @@ class RegionModel(models.Model):
     class Meta:
         verbose_name_plural = 'Регионы'
 
+    def __str__(self):
+        return self.description
 
 class NewsTopicsModel(models.Model):
     code = models.CharField(max_length=3, unique=True)
@@ -17,6 +19,9 @@ class NewsTopicsModel(models.Model):
 
     class Meta:
         verbose_name_plural = 'Тематики новостей'
+
+    def __str__(self):
+        return self.description
 
 
 class NewsModel(models.Model):
