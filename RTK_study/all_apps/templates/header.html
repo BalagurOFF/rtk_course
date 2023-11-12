@@ -1,0 +1,42 @@
+{% load bootstrap_icons %}
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #C5E1D4;">
+    <div class="container-fluid">
+        <a class="btn btn-success" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+            {% bs_icon 'list' size='1.5em' %} Меню
+        </a>
+
+        {% if user.is_authenticated %}
+            <div class="dropdown ms-3" style="background-color: #C5E1D4;">
+                <button class="btn btn-success dropdown-toggle" id="bd-versions" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
+                    {{ user.last_name }} {{ user.first_name }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" style="background-color: #C5E1D4;" aria-labelledby="bd-versions">
+                    <li>
+                        <a class="dropdown-item" href="{% url 'main:addNews' %}">Добавить новость</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'users:profile' %}">Личный кабинет</a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item"  href="{% url 'users:logout' %}">Выход</a>
+                    </li>
+                </ul>
+            </div>
+        {% else %}
+            <div class="dropdown ms-3" style="background-color: #C5E1D4;">
+                <button class="btn btn-success dropdown-toggle" id="bd-versions" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
+                    Профиль
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" style="background-color: #C5E1D4;" aria-labelledby="bd-versions">
+                    <li>
+                        <a class="dropdown-item" href="{% url 'users:registration' %}">Регистрация</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'users:login' %}">Войти</a>
+                    </li>
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+  </nav>

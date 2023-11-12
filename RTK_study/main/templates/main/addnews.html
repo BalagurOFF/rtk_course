@@ -1,0 +1,25 @@
+{% extends  'base.html' %}
+
+{% block title %}
+    {% if news.id %}
+        Изменение новости
+    {% else %}
+        Добавление новости
+    {% endif %}
+{% endblock title %}
+
+{% block content %}
+    {% if news.id %}
+        <h1 class="text-center py-3">Изменение новости</h1>
+    {% else %}
+        <h1 class="text-center py-3">Добавление новости</h1>
+    {% endif %}
+    <form action="{% url 'main:addNews' %}" class="form col-10 col-lg-8 mx-auto" method="POST">
+        {% csrf_token %}
+        {% include "rendering_form.html" %}
+        <div class="mb-3">
+            <button class="btn btn-success float-end" type='submit'>Опубликовать</button>
+        </div>
+    </form>
+    {{ message }}
+{% endblock content %}

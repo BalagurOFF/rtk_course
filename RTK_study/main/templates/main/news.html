@@ -1,0 +1,68 @@
+{% extends  'base.html' %}
+{% load bootstrap_icons %}
+{% load static %}
+{% block title %}
+    Новости
+{% endblock title %}
+
+{% block content %}
+<div class="container col-12 col-md-10 py-3">
+    <div class="col-12 mb-2 text-end">
+        <button class="btn btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseExample">
+            {% bs_icon 'funnel-fill' size='1em' %}
+        </button>
+    </div>
+    <div class="collapse" id="collapseFilter">
+        <form method="POST" class="pb-3 row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-6 g-2 mx-auto">
+            <div>
+                <select class="form-select fs-6" name="region">
+                    <option selected disabled>Выберите регион</option>
+                    {% for region in regions %}
+                        <option value="{{ region.code }}">{{ region.description }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <select class="form-select fs-6" name="topics">
+                    <option selected disabled>Выберите тематику новостей</option>
+                    {% for topic in newstopics %}
+                        <option value="{{ topic.code }}">{{ topic.description }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <select class="form-select fs-6" name="autor">
+                    <option selected disabled class="fs-6">Выберите автора новостей</option>
+                    {% for autor in autors %}
+                        <option value="{{ autor.id }}">{{ autor.last_name }} {{ autor.first_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <input type="date" class="form-control fs-6" placeholder="Дата окончания" name="date_start">
+            </div>
+            <div>
+                <input type="date" class="form-control fs-6" placeholder="Дата окончания" name="date_end">
+            </div>
+            <div>
+                <button type="submit" class="btn btn-success col-12">Найти</button>
+            </div>
+        </form>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4 g-2">
+        {% for news in newslist %}
+        <div class="col">
+            <div class="card h-100">
+                <img src="{% static news.img %}" class="card-img-top" alt="{{ news.img }}">
+                <div class="card-body ">
+                    <h6 class="card-text">{{ news.name|truncatewords:10 }}</h6>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'main:newsFull' news.id %}" class="btn btn-success stretched-link float-end align-items-end">Читать</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,37 @@
+{% extends  'base.html' %}
+{% load static %}
+
+{% block title %}
+    Подробно о новости
+{% endblock title %}
+
+{% block content %}
+    <div class="col-12 col-md-10 col-xl-8 mx-auto p-3">
+        <h1 class="text-center">{{ name }}</h1>
+        <h6 class="text-end text-secondary">Опубликовано: {{ datePublication }}, автор {{ autor }}</h6>
+        <div class="mx-auto py-2"><img src="{% static mainImage %}" alt="{{ mainImage }}" class="col-12"></div>
+        <p class="mx-auto py-2">{{ description }}</p>
+        <div>
+            <h5 class="text-center">Дополнительные материалы</h5>
+
+            <div id="carouselExampleFade" class="carousel carousel-dark slide carousel-fade col-md-12 mx-auto" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for material in addititionalMaterials %}
+                    <div class="carousel-item {% if forloop.counter == 1 %}active{% endif %}">
+                        <img src="{% static material %}" class="d-block w-100" alt="{{ material }}">
+                      </div>
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,16 @@
+{% extends  'base.html' %}
+
+{% block title %}
+    Авторизация
+{% endblock title %}
+
+{% block content %}
+    <h1 class="text-center py-3">Авторизация</h1>
+    <form action="{% url 'users:login' %}" class="form col-10 col-lg-8 mx-auto" method="POST">
+        {% csrf_token %}
+        {% include "rendering_form.html" %}
+        <div class="mb-3 d-flex justify-content-center">
+            <button class="btn btn-success float-center" type='submit'>Войти</button>
+        </div>
+    </form>
+{% endblock content %}

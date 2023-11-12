@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+{% load bootstrap5 %}
+{% load bootstrap_icons %}
+{% load static %}
+{% load i18n %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'main/css/style.css' %}">
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <title>
+        {% block title %} Новостной сайт {% endblock %}
+    </title>
+    {% block head %}  {% endblock head %}
+</head>
+<body class="d-flex flex-column min-vh-100">
+    {% block header %}
+        {% include "header.html" %}
+    {% endblock header %}
+
+    {% block sidebar %}
+        {% include "sidebar.html" %}
+    {% endblock sidebar %}
+
+    {% block content %}
+
+    {% endblock content %}
+
+    {% block footer %}
+        {% include "footer.html" %}
+    {% endblock footer %}
+
+
+</body>
+</html>

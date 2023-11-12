@@ -1,0 +1,31 @@
+{% extends  'base.html' %}
+
+{% block title %}
+    О нас
+{% endblock title %}
+
+{% block content %}
+    <h3 class="text-center py-3">Новости для Вас пишут:</h3>
+    <div class="container col-12 col-md-10">
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Фамилия и Имя автора</th>
+            <th scope="col">Занимаемая должность</th>
+            <th scope="col">Email</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for person in persons %}
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ person.last_name }} {{ person.first_name }}</td>
+                <td>{{ person.description }}</td>
+                <td>{{ person.email }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
