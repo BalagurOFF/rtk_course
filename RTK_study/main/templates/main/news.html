@@ -14,6 +14,7 @@
     </div>
     <div class="collapse" id="collapseFilter">
         <form method="POST" class="pb-3 row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-6 g-2 mx-auto">
+            {% csrf_token %}
             <div>
                 <select class="form-select fs-6" name="region">
                     <option selected disabled>Выберите регион</option>

@@ -1,9 +1,10 @@
 import datetime
 from django.shortcuts import render, redirect
-from django.contrib.auth import logout #, authenticate, login
-from . import forms
-from . import models
+from .models import RegionModel, NewsTopicsModel
 from django.contrib.auth import get_user_model
+
+from .forms import AddCommentForm, ContactForm
+
 #from django.http import HttpResponse
 # Create your views here.
 
@@ -28,26 +29,16 @@ def about(request):
 
 
 def contacts(request):
-    context = [
-        {'last_name': 'Филимонова', 
-         'first_name': 'Надежда', 
-         'description': 'Главный редактор', 
-         'email': '123@mail.ru'},
-        {'last_name': 'Григорьева', 
-         'first_name': 'Ариана', 
-         'description': 'Пресс-секретарь', 
-         'email': '234@mail.ru'},
-        {'last_name': 'Нуждин', 
-         'first_name': 'Андрей', 
-         'description': 'Администратор', 
-         'email': 'admin@mail.ru'},
-         ]
-    return render(request, 'main/contacts.html', {'persons' :context})
+    if request.user.is_authenticated:
+        form = ContactForm(initial={"name": request.user.get_full_name(), "email": request.user.email})
+    else:
+        form = ContactForm()
+    return render(request, 'main/contacts.html', {'form': form})
 
 
 def news(request):
-    regions = models.RegionModel.objects.order_by('description')
-    newstopics = models.NewsTopicsModel.objects.order_by('description')
+    regions = RegionModel.objects.order_by('description')
+    newstopics = NewsTopicsModel.objects.order_by('description')
     autors = User.objects.order_by('last_name')
     l = [
         {'id': 1, 'name': 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure officiis hic cupiditate at impedit nihil necessitatibus ullam perferendis et. Iusto dicta quasi ipsa natus possimus est maiores sunt magnam architecto!', 'img': 'main/news/6.jpg'},
@@ -68,11 +59,31 @@ def news(request):
 
 
 def new_full(request, id_new):
-    context = {'id': id_new,
-               'name': 'Новость №1',
+    form = AddCommentForm()
+    context = {
+               'form': form,
+               'last_news': [{'id': 1, 'name': 'Новость 1'},
+                             {'id': 2, 'name': 'Новость 2'},
+                             {'id': 3, 'name': 'Новость 3'},
+                             {'id': 4, 'name': 'Новость 4'},
+                             {'id': 5, 'name': 'Новость 5'},
+                             {'id': 6, 'name': 'Новость 6'},
+                             {'id': 7, 'name': 'Новость 7'},
+                             {'id': 8, 'name': 'Новость 8'},
+                             {'id': 9, 'name': 'Новость 9'},
+                             {'id': 10, 'name': 'Новость 10'},
+                             {'id': 11, 'name': 'Новость 11'},
+                             {'id': 12, 'name': 'Новость 12'},
+                             ],
+               'id': id_new,
+               'name': 'Новость №'+str(id_new),
                'description': 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure officiis hic cupiditate at impedit nihil necessitatibus ullam perferendis et. Iusto dicta quasi ipsa natus possimus est maiores sunt magnam architecto!',
                'autor': 'Автор Б.В.',
                'datePublication': datetime.date(2023, 11, 8),
                'mainImage': 'main/news/1.jpg',
                'addititionalMaterials': ['main/news/2.jpg', 'main/news/3.jpg', 'main/news/4.jpg', 'main/news/5.jpg', 'main/news/6.jpg'],}
     return render(request, 'main/newFull.html', context)
+
+
+def handler404(request, exception):
+    return render(request, '404.html')
