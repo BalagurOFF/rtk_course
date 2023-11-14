@@ -1,6 +1,6 @@
 import datetime
 from django.shortcuts import render, redirect
-from .models import RegionModel, NewsTopicsModel
+from .models import RegionModel, NewsTopicsModel, NewsCommentsModel, NewsModel
 from django.contrib.auth import get_user_model
 
 from .forms import AddCommentForm, ContactForm
@@ -59,29 +59,18 @@ def news(request):
 
 
 def new_full(request, id_new):
+    comments = NewsCommentsModel.objects.filter(news_id=id_new)
+    news_full = NewsModel.objects.get(pk=id_new)
+    news_full.description = news_full.description.split('\r\n')
+    last_news = NewsModel.objects.all().order_by('-date_pub').values('id', 'name')
     form = AddCommentForm()
+
     context = {
-               'form': form,
-               'last_news': [{'id': 1, 'name': 'Новость 1'},
-                             {'id': 2, 'name': 'Новость 2'},
-                             {'id': 3, 'name': 'Новость 3'},
-                             {'id': 4, 'name': 'Новость 4'},
-                             {'id': 5, 'name': 'Новость 5'},
-                             {'id': 6, 'name': 'Новость 6'},
-                             {'id': 7, 'name': 'Новость 7'},
-                             {'id': 8, 'name': 'Новость 8'},
-                             {'id': 9, 'name': 'Новость 9'},
-                             {'id': 10, 'name': 'Новость 10'},
-                             {'id': 11, 'name': 'Новость 11'},
-                             {'id': 12, 'name': 'Новость 12'},
-                             ],
-               'id': id_new,
-               'name': 'Новость №'+str(id_new),
-               'description': 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure officiis hic cupiditate at impedit nihil necessitatibus ullam perferendis et. Iusto dicta quasi ipsa natus possimus est maiores sunt magnam architecto!',
-               'autor': 'Автор Б.В.',
-               'datePublication': datetime.date(2023, 11, 8),
-               'mainImage': 'main/news/1.jpg',
-               'addititionalMaterials': ['main/news/2.jpg', 'main/news/3.jpg', 'main/news/4.jpg', 'main/news/5.jpg', 'main/news/6.jpg'],}
+        'last_news': last_news,
+        'news': news_full,
+        'form': form,
+        'comments': comments,
+        }
     return render(request, 'main/newFull.html', context)
 
 

@@ -1,16 +1,29 @@
-from django.contrib.auth import logout, authenticate, login
+from django.contrib.auth import logout, authenticate, login, get_user_model
 from django.shortcuts import render, redirect
 from . import forms
 #from django.contrib.auth.forms import *
 
 
+User = get_user_model()
 def registration(request):
-    form = forms.RegistrationForm()
+    if request.method == 'POST':
+        form = forms.RegistrationForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password1 = form.cleaned_data.get('password1')
+            password2 = form.cleaned_data.get('password2')
+            if password1 == password2:
+                user = form.save()
+
+                login(request, user)
+                return redirect('users:profile')
+    else:
+        form = forms.RegistrationForm()
     return render(request, 'users/registration.html', {'form': form})
 
 
 def profile(request):
-    form = forms.CustumUserChangeForm()
+    form = forms.CustumUserChangeForm(instance=request.user)
     return render(request, 'users/profile.html', {'form': form})
 
 
