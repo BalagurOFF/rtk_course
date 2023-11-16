@@ -1,5 +1,5 @@
 {% extends  'base.html' %}
-
+{% load bootstrap5 %}
 {% block title %}
     {% if news.id %}
         Изменение новости
@@ -14,12 +14,38 @@
     {% else %}
         <h1 class="text-center py-3">Добавление новости</h1>
     {% endif %}
-    <form action="{% url 'contentmanagment:addNews' %}" class="form col-10 col-lg-8 mx-auto" method="POST">
+    <form class="form col-10 col-lg-8 mx-auto py-2" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        {% include "rendering_form.html" %}
-        <div class="mb-3">
-            <button class="btn btn-success float-end mb-3" type='submit'>Опубликовать</button>
+        {% bootstrap_form form %}
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            {% if news.id %}
+                <button type="button" class="btn btn-success me-md-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Удалить
+                </button>
+            {% endif %}
+            {% bootstrap_button "Опубликовать" button_type="submit" button_class="btn-success" %}
         </div>
     </form>
-    {{ message }}
+
+    {% if news.id %}
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Вы действительно хотите удалить публикацию?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{ news.name }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Отмена</button>
+                    <a class="btn btn-success" href="{% url 'contentmanagment:removeNews' news.id %}" role="button">Удалить</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End modal -->
+    {% endif %}
 {% endblock content %}

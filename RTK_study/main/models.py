@@ -30,10 +30,10 @@ class NewsModel(models.Model):
     topicnews = models.ForeignKey(NewsTopicsModel, on_delete=models.PROTECT)
     autor = models.ForeignKey(User, on_delete=models.PROTECT)
     name = models.CharField(max_length=150, blank=True)
-    mainImage = models.ImageField(upload_to="upload/%Y/%m/%d/", max_length=200)
+    mainImage = models.ImageField(upload_to='news/%Y%m%d-%H%M/', max_length=200)
     description = models.CharField(max_length=10000, blank=True)
     date_pub = models.DateTimeField(auto_now=True)
-    addititionalImages = models.ImageField(upload_to="upload/%Y/%m/%d/", max_length=200)
+#    addititionalImages = models.ImageField(upload_to="news/%Y%m%d-%H%M/", max_length=1000)
 
     class Meta:
         verbose_name_plural = 'Новости'

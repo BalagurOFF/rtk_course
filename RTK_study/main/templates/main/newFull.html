@@ -1,6 +1,6 @@
 {% extends  'base.html' %}
 {% load static %}
-
+{% load bootstrap5 %}
 {% block title %}
     Подробно о новости
 {% endblock title %}
@@ -18,53 +18,63 @@
             </ul>
         </div>
         <div class="col-10 col-xl-8 mx-auto p-3">
-            <h1 class="text-center">{{ news.name }}</h1>
-            <h6 class="text-end text-secondary">Опубликовано: {{ news.date_pub }}, автор {{ news.autor.get_full_name  }}</h6>
-            <div class="mx-auto py-2 text-center"><img src="{% static news.mainImage %}" alt="{{ news.mainImage }}" class="col-10"></div>
+            <h1 class="text-center">
+                {{ news.name }}
+            </h1>
+            <h6 class="text-end text-secondary">
+                Опубликовано: {{ news.date_pub }}, автор {{ news.autor.get_full_name  }}
+            </h6>
+            <div class="mx-auto py-2 text-center">
+                <img src="{{ news.mainImage.url }}" alt="{{ news.mainImage }}" class="col-10">
+            </div>
             {% for paragraph in news.description %}
-                <p style="text-indent: 20px;">{{ paragraph }}</p>
+                <p class="py-1 my-1" style="text-indent: 20px;">
+                    {{ paragraph }}
+                </p>
             {% endfor %}
-{% comment %}            <div>
+{% comment %}
+            <div>
                 <h5 class="text-center">Дополнительные материалы</h5>
 
                 <div id="carouselExampleFade" class="carousel carousel-dark slide carousel-fade col-md-10 mx-auto" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         {% for material in news.addititionalImages %}
-                        <div class="carousel-item {% if forloop.counter == 1 %}active{% endif %}">
-                            <img src="{% static news.addititionalImages %}" class="d-block w-100" alt="{{ material }}">
-                          </div>
-                         {% endfor %}
+                            <div class="carousel-item {% if forloop.counter == 1 %}active{% endif %}">
+                                <img src="{{ material }}" class="d-block w-100" alt="{{ material }}">
+                            </div>
+                        {% endfor %}
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
-                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                      <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
-                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                      <span class="visually-hidden">Next</span>
-                    </button>
-                  </div>
-
+                    <div>
+                        <div class="col-md-10 mx-auto">
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                    </div>
+                <div>
             </div>
-             {% endcomment %}
-            <div>
+{% endcomment %}
+           <div>
                 {% for comment in comments %}
                     <hr class="mt-3">
                     <p class="text-secondary">{{ comment.user.get_full_name }}:</p>
                     <p class="text-start">{{ comment.text }}</p>
                     <p class="text-secondary text-end">Дата: {{ comment.date_comment }}</p>
                 {% endfor %}
-            </div>
-            {% if user.is_authenticated %}
-            <hr class="mt-5">
-            <form method="POST">
+           </div>
+           {% if user.is_authenticated %}
+           <hr class="mt-5">
+           <form method="POST" class="py-2">
                 {% csrf_token %}
-                {% include "rendering_form.html" %}
-                <div class="mb-3">
-                    <button class="btn btn-success float-end mb-3" type='submit'>Добавить комментарий</button>
-                </div>
-            </form>
-            {% endif %}
+                {% bootstrap_form form %}
+                {% bootstrap_button "Добавить комментарий" button_type="submit" button_class="btn-success float-end" %}
+           </form>
+           {% endif %}
         </div>
     </div>
 {% endblock content %}

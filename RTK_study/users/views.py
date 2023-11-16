@@ -1,13 +1,14 @@
-from django.contrib.auth import logout, authenticate, login, get_user_model
+from django.contrib.auth import logout, authenticate, login, get_user_model, update_session_auth_hash
 from django.shortcuts import render, redirect
-from . import forms
+from .forms import RegistrationForm, CustumUserChangeForm, LoginUserForm, CustomPasswordChangeForm
+
 #from django.contrib.auth.forms import *
 
 
 User = get_user_model()
 def registration(request):
     if request.method == 'POST':
-        form = forms.RegistrationForm(request.POST)
+        form = RegistrationForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password1 = form.cleaned_data.get('password1')
@@ -18,18 +19,26 @@ def registration(request):
                 login(request, user)
                 return redirect('users:profile')
     else:
-        form = forms.RegistrationForm()
+        form = RegistrationForm()
     return render(request, 'users/registration.html', {'form': form})
 
 
 def profile(request):
-    form = forms.CustumUserChangeForm(instance=request.user)
+    form = CustumUserChangeForm(instance=request.user)
+    if request.method == 'POST':
+        print(request.POST)
+        form = CustumUserChangeForm(data=request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('users:profile', permanent=True)
+        else:
+            print('Форма не валидна')
     return render(request, 'users/profile.html', {'form': form})
 
 
 def login_user(request):
     if request.method == 'POST':
-        form = forms.LoginUserForm(data=request.POST)
+        form = LoginUserForm(data=request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
@@ -38,7 +47,7 @@ def login_user(request):
                 login(request, user)
                 return redirect('main:news', permanent=True)
     else:
-        form = forms.LoginUserForm()
+        form = LoginUserForm()
     return render(request, 'users/login.html', {'form': form})
 
 
@@ -48,5 +57,11 @@ def logout_user(request):
 
 
 def reset_password(request):
-    form = forms.CustomPasswordChangeForm()
+    if request.method == "POST":
+        form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+    else:
+        form = CustomPasswordChangeForm(user=request.user)
     return render(request, 'users/resetpassword.html', {'form': form})

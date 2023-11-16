@@ -1,0 +1,31 @@
+{% extends  'base.html' %}
+
+{% block title %}
+    Мои публикации
+{% endblock title %}
+
+{% block content %}
+    <h3 class="text-center py-3">Новости, написанные вами:</h3>
+    <div class="container col-12 col-md-10">
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Название</th>
+            <th scope="col">Дата публикации</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for news in newslist %}
+            <tr class="my-auto align-items-center">
+                <th scope="row" class="my-auto">{{ forloop.counter }}</th>
+                <td class="my-auto align-items-center">{{ news.name }}</td>
+                <td class="my-auto">{{ news.date_pub }}</td>
+                <td class="my-auto"><a class="btn btn-success my-0 py-0" href="{% url 'contentmanagment:addNews' news.id %}">Редактировать</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
