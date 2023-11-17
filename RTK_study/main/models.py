@@ -33,7 +33,7 @@ class NewsModel(models.Model):
     mainImage = models.ImageField(upload_to='news/%Y%m%d-%H%M/', max_length=200)
     description = models.CharField(max_length=10000, blank=True)
     date_pub = models.DateTimeField(auto_now=True)
-#    addititionalImages = models.ImageField(upload_to="news/%Y%m%d-%H%M/", max_length=1000)
+    show_news = models.BooleanField(default=True)
 
     class Meta:
         verbose_name_plural = 'Новости'
@@ -44,3 +44,4 @@ class NewsCommentsModel(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     news = models.ForeignKey(NewsModel, on_delete=models.CASCADE)
     text = models.CharField(max_length=1000, blank=True)
+    show_comment = models.BooleanField(default=True)
