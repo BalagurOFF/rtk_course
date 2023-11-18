@@ -2,24 +2,6 @@ from django import forms
 from main.models import NewsModel, RegionModel, NewsTopicsModel
 
 
-class MultipleFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True
-
-
-class MultipleFileField(forms.FileField):
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault("widget", MultipleFileInput())
-        super().__init__(*args, **kwargs)
-
-    def clean(self, data, initial=None):
-        single_file_clean = super().clean
-        if isinstance(data, (list, tuple)):
-            result = [single_file_clean(d, initial) for d in data]
-        else:
-            result = single_file_clean(data, initial)
-        return result
-
-
 class AddNewsForm(forms.ModelForm):
     region = forms.ModelChoiceField(
         queryset=RegionModel.objects.all(),
@@ -35,16 +17,15 @@ class AddNewsForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control'}),
         empty_label='Выберите тематику новостей',
     )
-#    addititionalImages = MultipleFileField(label='Дополнительные материалы')
 
     class Meta:
         model = NewsModel
-        fields = ['name', 'mainImage', 'description', 'region', 'topicnews']#, 'addititionalImages']
+        fields = ['name', 'mainImage', 'description', 'region', 'topicnews']
 
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'mainImage': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': '3'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
         }
 
         labels = {
@@ -53,3 +34,20 @@ class AddNewsForm(forms.ModelForm):
             'description': 'Текст новости',
         }
 
+
+class RegionForm(forms.ModelForm):
+    class Meta:
+        model = RegionModel
+        fields = ['description']
+        widgets = {
+            'description': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class NewsTopicsForm(forms.ModelForm):
+    class Meta:
+        model = NewsTopicsModel
+        fields = ['description']
+        widgets = {
+            'description': forms.TextInput(attrs={'class': 'form-control'}),
+        }

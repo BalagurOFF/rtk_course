@@ -1,0 +1,36 @@
+{% extends  'base.html' %}
+{% load bootstrap_icons %}
+{% block title %}
+    Тематики новостей
+{% endblock title %}
+
+{% block content %}
+    <h3 class="text-center py-3">Редактирование тематик новостей:</h3>
+    <div class="container col-12 col-md-10">
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Тематика</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for newstopic in newstopics %}
+            <tr class="my-auto align-items-center">
+                <th scope="row" class="my-auto py-auto text-center" style="width: 50px;">{{ forloop.counter }}</th>
+                <td class="my-auto py-auto align-items-center">{{ newstopic.description }}</td>
+                <td class="my-1 py-1" style="width: 50px;"><a class="btn btn-success" href="{{ newstopic.get_absolute_url }}">{% bs_icon 'pencil' size='1.3em' %}</a></td>
+            </tr>
+        {% endfor %}
+            <form method="post">
+                <tr class="my-auto align-items-center">
+                    <th scope="row" class="my-auto text-center" style="width: 50px;"></th>
+                    <td class="my-auto py-auto align-items-center">{{ form.description }}</td>
+                    <td class="my-auto" style="width: 50px;"><button type="submit" class="btn btn-success">{% if id != None %}{% bs_icon 'pencil-fill' size='1.3em' %}{% else %}{% bs_icon 'plus-square-fill' size='1.3em' %}{% endif %} </button></td>
+                </tr>
+            </form>
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
