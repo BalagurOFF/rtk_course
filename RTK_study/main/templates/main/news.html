@@ -1,4 +1,5 @@
 {% extends  'base.html' %}
+{% load bootstrap5 %}
 {% load bootstrap_icons %}
 {% load static %}
 {% block title %}
@@ -51,7 +52,8 @@
         </form>
     </div>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4 g-2">
-        {% for news in newslist %}
+
+        {% for news in newslist.object_list %}
         <div class="col">
             <div class="card h-100">
                 <img src="{{ news.mainImage.url }}" class="card-img-top" alt="{{ news.mainImage }}" width="250px">
@@ -59,11 +61,14 @@
                     <h6 class="card-text">{{ news.name|truncatewords:10 }}</h6>
                 </div>
                 <div class="card-footer">
-                    <a href="{% url 'main:newsFull' news.id %}" class="btn btn-success stretched-link float-end align-items-end">Читать</a>
+                    <a href="{{ news.get_absolute_url }}" class="btn btn-success stretched-link float-end align-items-end">Читать</a>
                 </div>
             </div>
         </div>
         {% endfor %}
+    </div>
+    <div class="d-flex align-items-center justify-content-center py-2">
+    {% include 'render_pagination.html' with pagination=newslist %}
     </div>
 </div>
 {% endblock content %}

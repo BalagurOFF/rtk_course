@@ -11,3 +11,7 @@ footer {
   bottom: 0;
   height: 57px;
 }
+
+.pagination.page-item.active {
+  bg-color: #000000;
+}

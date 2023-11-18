@@ -32,33 +32,6 @@
                     {{ paragraph }}
                 </p>
             {% endfor %}
-{% comment %}
-            <div>
-                <h5 class="text-center">Дополнительные материалы</h5>
-
-                <div id="carouselExampleFade" class="carousel carousel-dark slide carousel-fade col-md-10 mx-auto" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        {% for material in news.addititionalImages %}
-                            <div class="carousel-item {% if forloop.counter == 1 %}active{% endif %}">
-                                <img src="{{ material }}" class="d-block w-100" alt="{{ material }}">
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <div>
-                        <div class="col-md-10 mx-auto">
-                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Previous</span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Next</span>
-                            </button>
-                        </div>
-                    </div>
-                <div>
-            </div>
-{% endcomment %}
            <div>
                 {% for comment in comments %}
                     <hr class="mt-3">

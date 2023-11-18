@@ -2,11 +2,8 @@ import datetime
 from django.shortcuts import render, redirect
 from .models import RegionModel, NewsTopicsModel, NewsCommentsModel, NewsModel
 from django.contrib.auth import get_user_model
-
+from django.core.paginator import Paginator
 from .forms import AddCommentForm, ContactForm
-
-#from django.http import HttpResponse
-# Create your views here.
 
 
 User=get_user_model()
@@ -40,14 +37,16 @@ def news(request):
     regions = RegionModel.objects.order_by('description')
     newstopics = NewsTopicsModel.objects.order_by('description')
     autors = User.objects.order_by('last_name')
-    newslist = NewsModel.objects.all().order_by('-date_pub')[:120]
+    paginator = Paginator(NewsModel.objects.all().order_by('-date_pub')[:600], 12)
+    page_number = request.GET.get('page')
+    newslist = paginator.get_page(page_number)
     context = {'newslist': newslist, 'regions': regions, 'newstopics': newstopics, 'autors': autors}
     return render(request, 'main/news.html', context)
 
 
-def new_full(request, id_new):
-    comments = NewsCommentsModel.objects.filter(news_id=id_new)
-    news_full = NewsModel.objects.get(pk=id_new)
+def new_full(request, id):
+    comments = NewsCommentsModel.objects.filter(news_id=id)
+    news_full = NewsModel.objects.get(pk=id)
     news_full.description = news_full.description.split('\r\n')
     last_news = NewsModel.objects.all().order_by('-date_pub').values('id', 'name')
     form = AddCommentForm()
