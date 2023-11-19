@@ -1,0 +1,33 @@
+{% extends  'base.html' %}
+{% load bootstrap_icons %}
+{% block title %}
+    Пользователи
+{% endblock title %}
+
+{% block content %}
+    <h3 class="text-center py-3">Пользователи:</h3>
+    <div class="container col-12 col-md-10">
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Пользователь</th>
+            <th scope="col">Email</th>
+            <th scope="col">Активность</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for customer in customers %}
+            <tr class="my-auto align-items-center">
+                <th scope="row" class="my-auto py-auto text-center" style="width: 50px;">{{ forloop.counter }}</th>
+                <td class="my-auto py-auto">{{ customer.get_full_name }}</td>
+                <td class="my-auto py-auto">{{ customer.email }}</td>
+                <td class="my-auto py-auto">{% if customer.is_active %}{% bs_icon 'check-circle' size='1.5em' %}{% else %}{% bs_icon 'x-circle' size='1.5em' %}{% endif %}</td>
+                <td class="my-auto py-auto" style="width: 50px;"><a class="btn btn-success py-0 my-0" href="{{ customer.get_absolute_url }}">{% bs_icon 'pencil-fill' size='1em' %}</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

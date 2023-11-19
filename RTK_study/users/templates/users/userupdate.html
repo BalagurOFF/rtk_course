@@ -1,0 +1,54 @@
+{% extends  'base.html' %}
+{% load bootstrap5 %}
+{% block title %}
+    {% if customer %}
+        Изменение данных пользователя
+    {% else %}
+        Создание нового пользователя
+    {% endif %}
+{% endblock title %}
+
+{% block content %}
+    {% if customer %}
+        <h1 class="text-center py-3">Изменение данных пользователя</h1>
+    {% else %}
+        <h1 class="text-center py-3">Создание нового пользователя</h1>
+    {% endif %}
+    <form class="form col-10 col-lg-8 mx-auto py-2" method="POST">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            {% if customer %}
+                <a class="btn btn-success me-md-2" href="{% url 'users:resetpassword' customer.id %}" role="button">Изменить пароль</a>
+                <button type="button" class="btn btn-success me-md-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Удалить
+                </button>
+                {% bootstrap_button "Изменить" button_type="submit" button_class="btn-success" %}
+            {% else %}
+                {% bootstrap_button "Добавить" button_type="submit" button_class="btn-success" %}
+            {% endif %}
+        </div>
+    </form>
+
+    {% if customer %}
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Вы действительно хотите удалить пользователя?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{ customer.get_full_name }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Отмена</button>
+                    <a class="btn btn-success" href="{% url 'users:removeUser' customer.id %}" role="button">Удалить</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End modal -->
+    {% endif %}
+{% endblock content %}
