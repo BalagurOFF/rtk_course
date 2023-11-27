@@ -1,31 +1,15 @@
 {% extends  'base.html' %}
-
+{% load bootstrap5 %}
 {% block title %}
     О нас
 {% endblock title %}
 
 {% block content %}
-    <h3 class="text-center py-3">Новости для Вас пишут:</h3>
-    <div class="container col-12 col-md-10">
-    <table class="table table-striped">
-        <thead>
-          <tr>
-            <th scope="col"></th>
-            <th scope="col">Фамилия и Имя автора</th>
-            <th scope="col">Занимаемая должность</th>
-            <th scope="col">Email</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for person in persons %}
-            <tr>
-                <th scope="row">{{ forloop.counter }}</th>
-                <td>{{ person.last_name }} {{ person.first_name }}</td>
-                <td>{{ person.description }}</td>
-                <td>{{ person.email }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
+    <div class="col-10 col-lg-8 mx-auto pt-3 fw-light">
+        <h2 class="text-center">О нас</h2>
+        <p class="fs-4">Привет! Мы - команда энтузиастов, которые любят узнавать о последних новостях и делиться ими с другими.
+            У нас работают только профессионалы своего дела, которые знают, как быстро и качественно обрабатывать большие объемы информации.
+            Мы ценим ваше время, поэтому всегда стараемся предоставлять только проверенную и актуальную информацию.
+            Наш сайт не только публикует новости, но и предлагает аналитические статьи на различные темы и комментарии экспертов.</p>
+    </div>
 {% endblock content %}

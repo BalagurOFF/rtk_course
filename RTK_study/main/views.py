@@ -1,4 +1,7 @@
 import datetime
+
+from django.db.models import Count
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import RegionModel, NewsTopicsModel, NewsCommentsModel, NewsModel
 from django.contrib.auth import get_user_model
@@ -8,21 +11,7 @@ from .forms import AddCommentForm, ContactForm
 
 User=get_user_model()
 def about(request):
-    context = [
-        {'last_name': 'Лисенок', 
-         'first_name': 'Алиса', 
-         'description': 'Автор бизнесс-новостей', 
-         'email': 'bizness@mail.ru'},
-        {'last_name': 'Емелина', 
-         'first_name': 'Ольга', 
-         'description': 'Автор международных новостей', 
-         'email': 'mir@mail.ru'},
-        {'last_name': 'Кадюкова', 
-         'first_name': 'Ксюша', 
-         'description': 'Автор региональных новостей', 
-         'email': 'region@mail.ru'},
-        ]
-    return render(request, 'main/about.html', {'persons' :context})
+    return render(request, 'main/about.html')
 
 
 def contacts(request):
@@ -45,10 +34,10 @@ def news(request):
 
 
 def new_full(request, id):
-    comments = NewsCommentsModel.objects.filter(news_id=id)
     news_full = NewsModel.objects.get(pk=id)
+    comments = news_full.newscommentsmodel_set.all().values('date_comment', 'text', 'user__first_name', 'user__last_name', 'show_comment')
     news_full.description = news_full.description.split('\r\n')
-    last_news = NewsModel.objects.all().order_by('-date_pub').values('id', 'name')
+    last_news = NewsModel.objects.order_by('-date_pub').all().values('id', 'name')
     form = AddCommentForm()
     if request.method == 'POST':
         form = AddCommentForm(request.POST)
@@ -68,3 +57,7 @@ def new_full(request, id):
 
 def handler404(request, exception):
     return render(request, '404.html')
+
+def moderation(request):
+    print(request.POST)
+    return HttpResponse(None)

@@ -33,7 +33,7 @@ class NewsTopicsModel(models.Model):
 
 class NewsModel(models.Model):
     region = models.ForeignKey(RegionModel, on_delete=models.PROTECT)
-    topicnews = models.ForeignKey(NewsTopicsModel, on_delete=models.PROTECT)
+    topicnews = models.ManyToManyField(NewsTopicsModel)
     autor = models.ForeignKey(User, on_delete=models.PROTECT)
     name = models.CharField(max_length=150, blank=True)
     mainImage = models.ImageField(upload_to='news/%Y%m%d-%H%M/', max_length=200)
@@ -43,6 +43,9 @@ class NewsModel(models.Model):
 
     class Meta:
         verbose_name_plural = 'Новости'
+
+    def __str__(self):
+        return self.name
 
     def get_absolute_url(self):
         return reverse('main:newsFull', kwargs={'id': self.id})

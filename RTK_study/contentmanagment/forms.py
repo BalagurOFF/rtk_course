@@ -35,6 +35,7 @@ class AddNewsForm(forms.ModelForm):
         }
 
 
+
 class RegionForm(forms.ModelForm):
     class Meta:
         model = RegionModel

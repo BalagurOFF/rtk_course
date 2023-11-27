@@ -5,22 +5,22 @@
 {% endblock title %}
 
 {% block content %}
-    <h3 class="text-center py-3">Редактирование регионов:</h3>
+    <h3 class="text-center py-3">Мои публикации:</h3>
     <div class="container col-12 col-md-10">
     <table class="table table-striped">
         <thead>
           <tr>
             <th scope="col"></th>
-            <th scope="col">Регион новости</th>
+            <th scope="col">Публикация</th>
             <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
-        {% for region in regions %}
+        {% for news in newslist %}
             <tr class="my-auto align-items-center">
                 <th scope="row" class="my-auto">{{ forloop.counter }}</th>
-                <td class="my-auto align-items-center">{{ region.description }}</td>
-                <td class="my-auto"><a class="btn btn-success my-0 py-0" href="{{ region.get_absolute_url }}">Редактировать</a></td>
+                <td class="my-auto align-items-center">{{ news.name }}</td>
+                <td class="my-auto"><a class="btn btn-success my-0 py-0" href="{% url 'contentmanagment:addNews' news.id %}">Редактировать</a></td>
             </tr>
         {% endfor %}
         </tbody>
