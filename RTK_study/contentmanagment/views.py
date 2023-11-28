@@ -15,11 +15,14 @@ def addnews(request, news_id=None):
         form = AddNewsForm()
     if request.method == 'POST':
         print(request.POST)
-        form = AddNewsForm(request.POST, request.FILES)
+        form = AddNewsForm(request.POST, request.FILES, instance=instance)
+        print(form.errors)
         if form.is_valid():
             news_entry = form.save(commit=False)
             news_entry.autor = request.user
             news_entry.save()
+            form.save_m2m()
+
         else:
             print("Форма не валидна")
         return redirect('contentmanagment:news-list', permanent=True)

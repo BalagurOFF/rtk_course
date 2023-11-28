@@ -5,19 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4f5b0333-89d2-4771-94fa-b589bbd91f82" name="Changes" comment="27.11.2023">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RTK_study/RTK_study/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/RTK_study/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RTK_study/RTK_study/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/RTK_study/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RTK_study/all_apps/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/all_apps/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RTK_study/contentmanagment/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/contentmanagment/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RTK_study/contentmanagment/templates/contentmanagment/addnews.html" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/contentmanagment/templates/contentmanagment/addnews.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RTK_study/contentmanagment/templates/contentmanagment/newslist.html" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/contentmanagment/templates/contentmanagment/newslist.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RTK_study/contentmanagment/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/contentmanagment/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RTK_study/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RTK_study/main/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/main/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RTK_study/main/templates/main/news.html" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/main/templates/main/news.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RTK_study/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/main/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,20 +29,26 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 8
+}]]></component>
   <component name="ProjectId" id="2YWP1niJ6CODjffIVa83NHbxcxN" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "D:/programming/rtk_course/RTK_study/main/static/django_select2"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/programming/rtk_course/RTK_study/main/static/django_select2&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\programming\rtk_course\RTK_study\main\static\django_select2" />

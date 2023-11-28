@@ -46,6 +46,7 @@ def new_full(request, id):
             comment_entry.user = request.user
             comment_entry.news = news_full
             comment_entry.save()
+            form = AddCommentForm()
     context = {
         'last_news': last_news,
         'news': news_full,
