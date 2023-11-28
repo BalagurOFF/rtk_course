@@ -32,8 +32,8 @@ class NewsTopicsModel(models.Model):
 
 
 class NewsModel(models.Model):
-    region = models.ForeignKey(RegionModel, on_delete=models.PROTECT)
-    topicnews = models.ManyToManyField(NewsTopicsModel)
+    region = models.ManyToManyField('RegionModel', blank=True, related_name='Регионы')
+    topicnews = models.ManyToManyField('NewsTopicsModel',blank=True, related_name='Тематики')
     autor = models.ForeignKey(User, on_delete=models.PROTECT)
     name = models.CharField(max_length=150, blank=True)
     mainImage = models.ImageField(upload_to='news/%Y%m%d-%H%M/', max_length=200)

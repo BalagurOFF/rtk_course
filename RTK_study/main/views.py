@@ -26,7 +26,7 @@ def news(request):
     regions = RegionModel.objects.order_by('description')
     newstopics = NewsTopicsModel.objects.order_by('description')
     autors = User.objects.order_by('last_name')
-    paginator = Paginator(NewsModel.objects.all().order_by('-date_pub')[:600], 12)
+    paginator = Paginator(NewsModel.objects.annotate(comments=Count('newscommentsmodel')).order_by('-date_pub')[:600], 12)
     page_number = request.GET.get('page')
     newslist = paginator.get_page(page_number)
     context = {'newslist': newslist, 'regions': regions, 'newstopics': newstopics, 'autors': autors}
@@ -34,8 +34,8 @@ def news(request):
 
 
 def new_full(request, id):
-    news_full = NewsModel.objects.get(pk=id)
-    comments = news_full.newscommentsmodel_set.all().values('date_comment', 'text', 'user__first_name', 'user__last_name', 'show_comment')
+    news_full = NewsModel.objects.select_related('autor').get(pk=id)
+    comments = news_full.newscommentsmodel_set.select_related('user').values('date_comment', 'text', 'user__first_name', 'user__last_name', 'show_comment')
     news_full.description = news_full.description.split('\r\n')
     last_news = NewsModel.objects.order_by('-date_pub').all().values('id', 'name')
     form = AddCommentForm()
