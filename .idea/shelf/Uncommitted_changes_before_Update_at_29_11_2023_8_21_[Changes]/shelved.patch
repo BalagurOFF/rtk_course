@@ -1,0 +1,154 @@
+Index: RTK_study/contentmanagment/views.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from django.shortcuts import render, redirect\r\n\r\nfrom .forms import AddNewsForm, NewsTopicsForm, RegionForm\r\nfrom main.models import NewsModel, RegionModel, NewsTopicsModel\r\n\r\n\r\ndef addnews(request, news_id=None):\r\n    print(request.user.id)\r\n    context = {}\r\n    if news_id:\r\n        instance = NewsModel.objects.get(pk=news_id)\r\n        form = AddNewsForm(instance=instance)\r\n    else:\r\n        instance = None\r\n        form = AddNewsForm()\r\n    if request.method == 'POST':\r\n        print(request.POST)\r\n        form = AddNewsForm(request.POST, request.FILES)\r\n        if form.is_valid():\r\n            news_entry = form.save(commit=False)\r\n            news_entry.autor = request.user\r\n            news_entry.save()\r\n        else:\r\n            print(\"Форма не валидна\")\r\n        return redirect('contentmanagment:news-list', permanent=True)\r\n    context['form'] = form\r\n    context['news'] = instance\r\n    return render(request, 'contentmanagment/addnews.html', context)\r\n\r\n\r\ndef newschange(request):\r\n    newslist = NewsModel.objects.filter(autor=request.user)\r\n    context = {'newslist': newslist}\r\n    return render(request, 'contentmanagment/newslist.html', context)\r\n\r\n\r\ndef removenews(request, news_id):\r\n    entry = NewsModel.objects.filter(id=news_id)\r\n    entry.delete()\r\n    return redirect('contentmanagment:news-list', permanent=True)\r\n\r\n\r\ndef regions(request, id=None):\r\n    regions = RegionModel.objects.all()\r\n    form = RegionForm()\r\n    if id != None:\r\n        instance = RegionModel.objects.get(pk=id)\r\n        form = RegionForm(instance=instance)\r\n    context = {\r\n        'regions': regions,\r\n        'form': form,\r\n        'id': id\r\n    }\r\n    return render(request, 'contentmanagment/regions.html', context)\r\n\r\n\r\ndef topics(request, id=None):\r\n    newstopics = NewsTopicsModel.objects.all()\r\n    form = NewsTopicsForm()\r\n    if id != None:\r\n        instance = NewsTopicsModel.objects.get(pk=id)\r\n        form = NewsTopicsForm(instance=instance)\r\n    context = {\r\n        'newstopics': newstopics,\r\n        'form': form,\r\n        'id': id,\r\n    }\r\n    return render(request, 'contentmanagment/topics.html', context)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RTK_study/contentmanagment/views.py b/RTK_study/contentmanagment/views.py
+--- a/RTK_study/contentmanagment/views.py	(revision 73af98480b0fe8c67793c7a847071ffaa04987c4)
++++ b/RTK_study/contentmanagment/views.py	(date 1701213659323)
+@@ -15,11 +15,14 @@
+         form = AddNewsForm()
+     if request.method == 'POST':
+         print(request.POST)
+-        form = AddNewsForm(request.POST, request.FILES)
++        form = AddNewsForm(request.POST, request.FILES, instance=instance)
++        print(form.errors)
+         if form.is_valid():
+             news_entry = form.save(commit=False)
+             news_entry.autor = request.user
+             news_entry.save()
++            form.save_m2m()
++
+         else:
+             print("Форма не валидна")
+         return redirect('contentmanagment:news-list', permanent=True)
+Index: RTK_study/main/views.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import datetime\r\n\r\nfrom django.db.models import Count\r\nfrom django.http import HttpResponse\r\nfrom django.shortcuts import render, redirect\r\nfrom .models import RegionModel, NewsTopicsModel, NewsCommentsModel, NewsModel\r\nfrom django.contrib.auth import get_user_model\r\nfrom django.core.paginator import Paginator\r\nfrom .forms import AddCommentForm, ContactForm\r\n\r\n\r\nUser=get_user_model()\r\ndef about(request):\r\n    return render(request, 'main/about.html')\r\n\r\n\r\ndef contacts(request):\r\n    if request.user.is_authenticated:\r\n        form = ContactForm(initial={\"name\": request.user.get_full_name(), \"email\": request.user.email})\r\n    else:\r\n        form = ContactForm()\r\n    return render(request, 'main/contacts.html', {'form': form})\r\n\r\n\r\ndef news(request):\r\n    regions = RegionModel.objects.order_by('description')\r\n    newstopics = NewsTopicsModel.objects.order_by('description')\r\n    autors = User.objects.order_by('last_name')\r\n    paginator = Paginator(NewsModel.objects.annotate(comments=Count('newscommentsmodel')).order_by('-date_pub')[:600], 12)\r\n    page_number = request.GET.get('page')\r\n    newslist = paginator.get_page(page_number)\r\n    context = {'newslist': newslist, 'regions': regions, 'newstopics': newstopics, 'autors': autors}\r\n    return render(request, 'main/news.html', context)\r\n\r\n\r\ndef new_full(request, id):\r\n    news_full = NewsModel.objects.select_related('autor').get(pk=id)\r\n    comments = news_full.newscommentsmodel_set.select_related('user').values('date_comment', 'text', 'user__first_name', 'user__last_name', 'show_comment')\r\n    news_full.description = news_full.description.split('\\r\\n')\r\n    last_news = NewsModel.objects.order_by('-date_pub').all().values('id', 'name')\r\n    form = AddCommentForm()\r\n    if request.method == 'POST':\r\n        form = AddCommentForm(request.POST)\r\n        if form.is_valid():\r\n            comment_entry = form.save(commit=False)\r\n            comment_entry.user = request.user\r\n            comment_entry.news = news_full\r\n            comment_entry.save()\r\n    context = {\r\n        'last_news': last_news,\r\n        'news': news_full,\r\n        'form': form,\r\n        'comments': comments,\r\n        }\r\n    return render(request, 'main/newFull.html', context)\r\n\r\n\r\ndef handler404(request, exception):\r\n    return render(request, '404.html')\r\n\r\ndef moderation(request):\r\n    print(request.POST)\r\n    return HttpResponse(None)
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RTK_study/main/views.py b/RTK_study/main/views.py
+--- a/RTK_study/main/views.py	(revision 73af98480b0fe8c67793c7a847071ffaa04987c4)
++++ b/RTK_study/main/views.py	(date 1701213659418)
+@@ -46,6 +46,7 @@
+             comment_entry.user = request.user
+             comment_entry.news = news_full
+             comment_entry.save()
++            form = AddCommentForm()
+     context = {
+         'last_news': last_news,
+         'news': news_full,
+@@ -60,4 +61,4 @@
+ 
+ def moderation(request):
+     print(request.POST)
+-    return HttpResponse(None)
+\ No newline at end of file
++    return HttpResponse(None)
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ProjectRootManager\" version=\"2\" project-jdk-name=\"Python 3.11 (rtk_course) (2)\" project-jdk-type=\"Python SDK\" />\r\n  <component name=\"PyCharmProfessionalAdvertiser\">\r\n    <option name=\"shown\" value=\"true\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision 73af98480b0fe8c67793c7a847071ffaa04987c4)
++++ b/.idea/misc.xml	(date 1701213659321)
+@@ -1,6 +1,9 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.11 (rtk_course) (2)" project-jdk-type="Python SDK" />
++  <component name="Black">
++    <option name="sdkName" value="Python 3.12 (rtk_course)" />
++  </component>
++  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (rtk_course)" project-jdk-type="Python SDK" />
+   <component name="PyCharmProfessionalAdvertiser">
+     <option name="shown" value="true" />
+   </component>
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"4f5b0333-89d2-4771-94fa-b589bbd91f82\" name=\"Changes\" comment=\"27.11.2023\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/RTK_study/RTK_study/settings.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/RTK_study/RTK_study/settings.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/RTK_study/RTK_study/urls.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/RTK_study/RTK_study/urls.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/RTK_study/all_apps/templates/base.html\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/RTK_study/all_apps/templates/base.html\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/RTK_study/contentmanagment/forms.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/RTK_study/contentmanagment/forms.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/RTK_study/contentmanagment/templates/contentmanagment/addnews.html\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/RTK_study/contentmanagment/templates/contentmanagment/addnews.html\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/RTK_study/contentmanagment/templates/contentmanagment/newslist.html\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/RTK_study/contentmanagment/templates/contentmanagment/newslist.html\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/RTK_study/contentmanagment/views.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/RTK_study/contentmanagment/views.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/RTK_study/db.sqlite3\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/RTK_study/db.sqlite3\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/RTK_study/main/models.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/RTK_study/main/models.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/RTK_study/main/templates/main/news.html\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/RTK_study/main/templates/main/news.html\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/RTK_study/main/views.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/RTK_study/main/views.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/requirements.txt\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/requirements.txt\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"HTML File\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"MarkdownSettingsMigration\">\r\n    <option name=\"stateVersion\" value=\"1\" />\r\n  </component>\r\n  <component name=\"ProjectId\" id=\"2YWP1niJ6CODjffIVa83NHbxcxN\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"DefaultHtmlFileTemplate\": \"HTML File\",\r\n    \"RunOnceActivity.OpenProjectViewOnStart\": \"true\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\r\n    \"git-widget-placeholder\": \"master\",\r\n    \"last_opened_file_path\": \"D:/programming/rtk_course/RTK_study/main/static/django_select2\"\r\n  }\r\n}]]></component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CopyFile.RECENT_KEYS\">\r\n      <recent name=\"D:\\programming\\rtk_course\\RTK_study\\main\\static\\django_select2\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"4f5b0333-89d2-4771-94fa-b589bbd91f82\" name=\"Changes\" comment=\"\" />\r\n      <created>1700638149671</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1700638149671</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"22.11.2023\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1700638668334</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1700638668334</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"27.11.2023\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1701070455789</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1701070455789</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"3\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"22.11.2023\" />\r\n    <MESSAGE value=\"27.11.2023\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"27.11.2023\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 73af98480b0fe8c67793c7a847071ffaa04987c4)
++++ b/.idea/workspace.xml	(date 1701213659322)
+@@ -5,19 +5,7 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="4f5b0333-89d2-4771-94fa-b589bbd91f82" name="Changes" comment="27.11.2023">
+-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/RTK_study/RTK_study/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/RTK_study/settings.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/RTK_study/RTK_study/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/RTK_study/urls.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/RTK_study/all_apps/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/all_apps/templates/base.html" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/RTK_study/contentmanagment/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/contentmanagment/forms.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/RTK_study/contentmanagment/templates/contentmanagment/addnews.html" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/contentmanagment/templates/contentmanagment/addnews.html" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/RTK_study/contentmanagment/templates/contentmanagment/newslist.html" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/contentmanagment/templates/contentmanagment/newslist.html" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/RTK_study/contentmanagment/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/contentmanagment/views.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/RTK_study/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/db.sqlite3" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/RTK_study/main/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/main/models.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/RTK_study/main/templates/main/news.html" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/main/templates/main/news.html" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/RTK_study/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/RTK_study/main/views.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -37,20 +25,26 @@
+   <component name="MarkdownSettingsMigration">
+     <option name="stateVersion" value="1" />
+   </component>
++  <component name="ProjectColorInfo"><![CDATA[{
++  "associatedIndex": 8
++}]]></component>
+   <component name="ProjectId" id="2YWP1niJ6CODjffIVa83NHbxcxN" />
++  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
++    <ConfirmationsSetting value="2" id="Add" />
++  </component>
+   <component name="ProjectViewState">
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent"><![CDATA[{
+-  "keyToString": {
+-    "DefaultHtmlFileTemplate": "HTML File",
+-    "RunOnceActivity.OpenProjectViewOnStart": "true",
+-    "RunOnceActivity.ShowReadmeOnStart": "true",
+-    "git-widget-placeholder": "master",
+-    "last_opened_file_path": "D:/programming/rtk_course/RTK_study/main/static/django_select2"
++  <component name="PropertiesComponent">{
++  &quot;keyToString&quot;: {
++    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
++    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
++    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
++    &quot;last_opened_file_path&quot;: &quot;D:/programming/rtk_course/RTK_study/main/static/django_select2&quot;
+   }
+-}]]></component>
++}</component>
+   <component name="RecentsManager">
+     <key name="CopyFile.RECENT_KEYS">
+       <recent name="D:\programming\rtk_course\RTK_study\main\static\django_select2" />
+@@ -81,7 +75,15 @@
+       <option name="project" value="LOCAL" />
+       <updated>1701070455789</updated>
+     </task>
+-    <option name="localTasksCounter" value="3" />
++    <task id="LOCAL-00003" summary="27.11.2023">
++      <option name="closed" value="true" />
++      <created>1701181586153</created>
++      <option name="number" value="00003" />
++      <option name="presentableId" value="LOCAL-00003" />
++      <option name="project" value="LOCAL" />
++      <updated>1701181586153</updated>
++    </task>
++    <option name="localTasksCounter" value="4" />
+     <servers />
+   </component>
+   <component name="VcsManagerConfiguration">
