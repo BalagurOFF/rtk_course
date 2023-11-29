@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 
-from .forms import AddNewsForm, NewsTopicsForm, RegionForm
-from main.models import NewsModel, RegionModel, NewsTopicsModel
+from .forms import AddNewsForm, TagsForm
+from main.models import NewsModel, TagsModel
 
 
 def addnews(request, news_id=None):

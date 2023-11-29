@@ -1,6 +1,6 @@
 from django import forms
-from main.models import NewsModel, RegionModel, NewsTopicsModel
-from django_select2 import forms as s2forms
+from main.models import NewsModel, TagsModel
+from django_select2.forms import Select2MultipleWidget, Select2Widget
 
 #class RegionWidget(s2forms.ModelSelect2MultipleWidget):
 #    search_fields = [
@@ -18,39 +18,38 @@ class AddNewsForm(forms.ModelForm):
 
     class Meta:
         model = NewsModel
-        fields = ['name', 'mainImage', 'description', 'region', 'topicnews',]# 'show_news']
+        fields = ['name', 'mainImage', 'description', 'tags', 'show_news']
 
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'mainImage': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
-            'region': forms.SelectMultiple(attrs={'class': 'select2'}),
-            'topicnews': forms.SelectMultiple(attrs={'class': 'select2'}),
+            'tags': Select2MultipleWidget(),
+            'show_news': forms.CheckboxInput()
         }
 
         labels = {
             'name': 'Название',
             'mainImage': 'Основное изображение',
             'description': 'Текст новости',
-            'region': 'Выберите регионы',
-            'topicnews': 'Тематика новостей',
-            #'show_news': 'Отображать новость'
+            'tags': 'Тэги новостей',
+            'show_news': 'Отображать новость'
         }
 
 
 
-class RegionForm(forms.ModelForm):
-    class Meta:
-        model = RegionModel
-        fields = ['description']
-        widgets = {
-            'description': forms.TextInput(attrs={'class': 'form-control'}),
-        }
+#class RegionForm(forms.ModelForm):
+#    class Meta:
+#        model = RegionModel
+#        fields = ['description']
+#        widgets = {
+#            'description': forms.TextInput(attrs={'class': 'form-control'}),
+#        }
 
 
-class NewsTopicsForm(forms.ModelForm):
+class TagsForm(forms.ModelForm):
     class Meta:
-        model = NewsTopicsModel
+        model = TagsModel
         fields = ['description']
         widgets = {
             'description': forms.TextInput(attrs={'class': 'form-control'}),

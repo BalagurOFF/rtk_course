@@ -25,11 +25,14 @@
             {% endif %}
             {% bootstrap_button "Опубликовать" button_type="submit" button_class="btn-success" %}
         </div>
+
     </form>
+    {{ form.media.js }}
+<!--
     <script>
         $('.select2').select2();
     </script>
-
+-->
     {% if news.id %}
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

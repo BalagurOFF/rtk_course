@@ -3,7 +3,7 @@ import datetime
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from .models import RegionModel, NewsTopicsModel, NewsCommentsModel, NewsModel
+from .models import TagsModel, NewsCommentsModel, NewsModel
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
 from .forms import AddCommentForm, ContactForm
@@ -23,13 +23,12 @@ def contacts(request):
 
 
 def news(request):
-    regions = RegionModel.objects.order_by('description')
-    newstopics = NewsTopicsModel.objects.order_by('description')
+    tags = TagsModel.objects.order_by('description')
     autors = User.objects.order_by('last_name')
     paginator = Paginator(NewsModel.objects.annotate(comments=Count('newscommentsmodel')).order_by('-date_pub')[:600], 12)
     page_number = request.GET.get('page')
     newslist = paginator.get_page(page_number)
-    context = {'newslist': newslist, 'regions': regions, 'newstopics': newstopics, 'autors': autors}
+    context = {'newslist': newslist, 'tags': tags, 'autors': autors}
     return render(request, 'main/news.html', context)
 
 
