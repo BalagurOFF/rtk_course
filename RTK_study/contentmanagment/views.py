@@ -14,9 +14,7 @@ def addnews(request, news_id=None):
         instance = None
         form = AddNewsForm()
     if request.method == 'POST':
-        print(request.POST)
         form = AddNewsForm(request.POST, request.FILES, instance=instance)
-        print(form.errors)
         if form.is_valid():
             news_entry = form.save(commit=False)
             news_entry.autor = request.user
@@ -43,29 +41,21 @@ def removenews(request, news_id):
     return redirect('contentmanagment:news-list', permanent=True)
 
 
-def regions(request, id=None):
-    regions = RegionModel.objects.all()
-    form = RegionForm()
+def tags(request, id=None):
+    tags = TagsModel.objects.all()
+    form = TagsForm()
     if id != None:
-        instance = RegionModel.objects.get(pk=id)
-        form = RegionForm(instance=instance)
+        instance = TagsModel.objects.get(pk=id)
+        form = TagsForm(instance=instance)
+    if request.method == 'POST':
+        form = TagsForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            return redirect('contentmanagment:tags', permanent=True)
     context = {
-        'regions': regions,
-        'form': form,
-        'id': id
-    }
-    return render(request, 'contentmanagment/regions.html', context)
-
-
-def topics(request, id=None):
-    newstopics = NewsTopicsModel.objects.all()
-    form = NewsTopicsForm()
-    if id != None:
-        instance = NewsTopicsModel.objects.get(pk=id)
-        form = NewsTopicsForm(instance=instance)
-    context = {
-        'newstopics': newstopics,
+        'tags': tags,
         'form': form,
         'id': id,
     }
-    return render(request, 'contentmanagment/topics.html', context)
+    print(form.instance)
+    return render(request, 'contentmanagment/tags.html', context)

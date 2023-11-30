@@ -1,7 +1,8 @@
 from django.contrib.auth import logout, authenticate, login, get_user_model, update_session_auth_hash
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import UserChangeForm
 from django.shortcuts import render, redirect
-from .forms import RegistrationForm, CustumUserChangeForm, LoginUserForm, CustomPasswordChangeForm, AdminUserChangeForm
+from .forms import *
 
 # from django.contrib.auth.forms import *
 
@@ -11,30 +12,58 @@ User = get_user_model()
 
 def registration(request):
     if request.method == 'POST':
-        form = RegistrationForm(request.POST)
+        if request.user.is_authenticated:
+            if request.user.has_perm('user.add_user'):
+                form = AdminRegistrationForm(request.POST)
+            else:
+                return render(request, 'AccessDenied.html')
+        else:
+            form = RegistrationForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password1 = form.cleaned_data.get('password1')
             password2 = form.cleaned_data.get('password2')
             if password1 == password2:
                 user = form.save()
-
-                login(request, user)
-                return redirect('users:profile')
+                if request.user.is_authenticated and request.user.has_perm('user.add_user'):
+                    return redirect('users:listusers', permanent=True)
+                else:
+                    login(request, user)
+                    return redirect('users:profile', permanent=True)
     else:
-        form = RegistrationForm()
+        if request.user.is_authenticated:
+            if request.user.has_perm('user.add_user'):
+                form = AdminRegistrationForm()
+            else:
+                return render(request, 'AccessDenied.html')
+        else:
+            form = RegistrationForm()
     return render(request, 'users/registration.html', {'form': form})
 
 
-def profile(request):
-    form = CustumUserChangeForm(instance=request.user)
+@login_required
+def profile(request, id=None):
     if request.method == 'POST':
-        form = CustumUserChangeForm(data=request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('users:profile', permanent=True)
+        if id is not None and request.user.has_perm('user.change_user'):
+            instance = User.objects.get(pk=id)
+            form = AdminCustumUserChangeForm(request.POST, instance=instance)
+            if form.is_valid():
+                form.save()
+                return redirect('users:listusers', permanent=True)
         else:
-            print('Форма не валидна')
+            instance = request.user
+            form = CustumUserChangeForm(request.POST, instance=instance)
+            if form.is_valid():
+                form.save()
+                return redirect('users:profile', permanent=True)
+    else:
+        if id is not None and request.user.has_perm('user.change_user'):
+            instance = User.objects.get(pk=id)
+            form = AdminCustumUserChangeForm(instance=instance)
+        else:
+            instance = request.user
+            form = CustumUserChangeForm(instance=instance)
+
     return render(request, 'users/profile.html', {'form': form})
 
 
@@ -82,24 +111,12 @@ def listusers(request):
 
 
 def userupdate(request, id=None):
-    if id == None:
-        form = RegistrationForm()
+    if id != None:
+        instance = User.objects.get(pk=id)
+        form = AdminCustumUserChangeForm(instance=instance)
         context = {
             'form': form,
-        }
-        if request.method == "POST":
-            form = RegistrationForm(request.POST)
-            if form.is_valid():
-                password1 = form.cleaned_data.get('password1')
-                password2 = form.cleaned_data.get('password2')
-                if password1 == password2:
-                    form.save()
-            return redirect('users:listusers', permanent=True)
-    else:
-        form = UserChangeForm(instance=User.objects.get(pk=id))
-        context = {
-            'form': form,
-            'customer': User.objects.get(pk=id),
+            'customer': instance,
         }
         if request.method == "POST":
             form = UserChangeForm(request.POST, instance=User.objects.get(pk=id))
@@ -111,6 +128,19 @@ def userupdate(request, id=None):
                     print(err)
             else:
                 print('Форма не валидна')
+            return redirect('users:listusers', permanent=True)
+    else:
+        form = RegistrationForm()
+        context = {
+            'form': form,
+        }
+        if request.method == "POST":
+            form = RegistrationForm(request.POST)
+            if form.is_valid():
+                password1 = form.cleaned_data.get('password1')
+                password2 = form.cleaned_data.get('password2')
+                if password1 == password2:
+                    form.save()
             return redirect('users:listusers', permanent=True)
     return render(request, 'users/userupdate.html', context)
 

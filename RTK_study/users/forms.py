@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model, password_validation
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm, PasswordChangeForm, \
     SetPasswordForm
+from django_select2.forms import Select2MultipleWidget
 
 
 class LoginUserForm(AuthenticationForm):
@@ -10,58 +11,83 @@ class LoginUserForm(AuthenticationForm):
 
 
 class RegistrationForm(UserCreationForm):
-#    username = forms.CharField(label='Имя пользователя', widget=forms.TextInput(attrs={'class': 'form-control'}))
-#    password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
-#    password2 = forms.CharField(label='Подтверждение пароля', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
-
     class Meta:
         model = get_user_model()
-        fields = ['first_name', 'username', 'password1', 'password2']
+        fields = ['username', 'password1', 'password2', 'first_name', 'last_name', 'email']
+        labels = {
+            'username': 'Логин',
+            'password1': 'Пароль',
+            'password2': 'Повторите пароль',
+            'first_name': 'Имя',
+            'last_name': 'Фамилия',
+            'email': 'Email',
+        }
         widgets = {
-            'first_name': forms.TextInput(attrs={'required': True}),
             'username': forms.TextInput(attrs={'required': True}),
             'password1': forms.PasswordInput(attrs={'required': True}),
             'password2': forms.PasswordInput(attrs={'required': True}),
+            'first_name': forms.TextInput(attrs={'required': True}),
+            'last_name': forms.TextInput(attrs={'required': False}),
+            'email': forms.TextInput(attrs={'required': False}),
+        }
+
+
+class AdminRegistrationForm(UserCreationForm):
+    class Meta:
+        model = get_user_model()
+        fields = ['username', 'password1', 'password2', 'first_name', 'last_name','email', 'groups']
+        labels = {
+            'username': 'Логин',
+            'password1': 'Пароль',
+            'password2': 'Повторите пароль',
+            'first_name': 'Имя',
+            'last_name': 'Фамилия',
+            'email': 'Email',
+            'groups': 'Группы пользователя'
+        }
+        widgets = {
+            'username': forms.TextInput(attrs={'required': True}),
+            'password1': forms.PasswordInput(attrs={'required': True}),
+            'password2': forms.PasswordInput(attrs={'required': True}),
+            'first_name': forms.TextInput(attrs={'required': True}),
+            'last_name': forms.TextInput(attrs={'required': False}),
+            'email': forms.TextInput(attrs={'required': False}),
+            'groups': Select2MultipleWidget(),
         }
 
 
 class CustumUserChangeForm(forms.ModelForm):
-#    username = forms.CharField(label='Имя пользователя', widget=forms.TextInput(attrs={'class': 'form-control', 'disabled': True}))
-#    email = forms.CharField(label='E-mail', widget=forms.EmailInput(attrs={'class': 'form-control'}))
-#    first_name = forms.CharField(label='Имя', widget=forms.TextInput(attrs={'class': 'form-control'}))
-#    last_name = forms.CharField(label='Фамилия', widget=forms.TextInput(attrs={'class': 'form-control'}))
-#    description = forms.CharField(label='Должность', widget=forms.TextInput(attrs={'class': 'form-control'}))
+
     class Meta:
         model = get_user_model()
-        fields = ['username', 'email', 'first_name', 'last_name', 'description']
+        fields = ['username', 'email', 'first_name', 'last_name']
         labels = {
             'username': 'Имя пользователя',
             'email': 'Email',
             'first_name': 'Имя',
             'last_name': 'Фамилия',
-            'description': 'Занимаемая должность'
         },
         widgets = {
             'username': forms.TextInput(attrs={'readonly': True}),
         }
 
 
-class AdminUserChangeForm(forms.ModelForm):
-#    username = forms.CharField(label='Имя пользователя', widget=forms.TextInput(attrs={'class': 'form-control', 'disabled': True}))
-#    email = forms.CharField(label='E-mail', widget=forms.EmailInput(attrs={'class': 'form-control'}))
-#    first_name = forms.CharField(label='Имя', widget=forms.TextInput(attrs={'class': 'form-control'}))
-#    last_name = forms.CharField(label='Фамилия', widget=forms.TextInput(attrs={'class': 'form-control'}))
-#    description = forms.CharField(label='Должность', widget=forms.TextInput(attrs={'class': 'form-control'}))
+class AdminCustumUserChangeForm(forms.ModelForm):
+
     class Meta:
         model = get_user_model()
-        fields = ['username', 'email', 'first_name', 'last_name', 'is_active', 'description']
+        fields = ['username', 'email', 'first_name', 'last_name', 'description', 'groups']
         labels = {
             'username': 'Имя пользователя',
             'email': 'Email',
             'first_name': 'Имя',
             'last_name': 'Фамилия',
-            'is_active': 'Активность пользователя',
-            'description': 'Занимаемая должность'
+            'description': 'Занимаемая должность',
+            'groups': 'Группы пользователя',
+        },
+        widgets = {
+            'username': forms.TextInput(attrs={'readonly': True}),
+            'groups': Select2MultipleWidget(),
         }
 
 

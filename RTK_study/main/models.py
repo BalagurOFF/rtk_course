@@ -5,19 +5,6 @@ from django.utils.translation import gettext as _
 
 
 User = get_user_model()
-#class RegionModel(models.Model):
-#    description = models.CharField(max_length=100, blank=True)
-#
-#    class Meta:
-#        verbose_name_plural = 'Регионы'
-#
-#    def __str__(self):
-#        return self.description
-
-#    def get_absolute_url(self):
-#        return reverse('contentmanagment:regions', kwargs={'id': self.id})
-
-
 class TagsModel(models.Model):
     description = models.CharField(max_length=100, blank=True)
 
@@ -28,11 +15,10 @@ class TagsModel(models.Model):
         return self.description
 
     def get_absolute_url(self):
-        return reverse('contentmanagment:topics', kwargs={'id': self.id})
+        return reverse('contentmanagment:tags', kwargs={'id': self.id})
 
 
 class NewsModel(models.Model):
-#    region = models.ManyToManyField('RegionModel', blank=True, related_name='Регионы')
     tags = models.ManyToManyField('TagsModel',blank=True, related_name='Тэги')
     autor = models.ForeignKey(User, on_delete=models.PROTECT)
     name = models.CharField(max_length=150, blank=True)

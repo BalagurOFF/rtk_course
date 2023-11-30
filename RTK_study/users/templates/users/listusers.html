@@ -29,5 +29,8 @@
         {% endfor %}
         </tbody>
     </table>
+    <div class="d-flex align-items-center justify-content-center py-2">
+        <a class="btn btn-success" href="{% url 'users:registration' %}" role="button">Добавить пользователя</a>
+    </div>
 </div>
 {% endblock content %}

@@ -1,29 +1,30 @@
 {% extends  'base.html' %}
 {% load bootstrap_icons %}
 {% block title %}
-    Тематики новостей
+    Тэги новостей
 {% endblock title %}
 
 {% block content %}
-    <h3 class="text-center py-3">Редактирование тематик новостей:</h3>
+    <h3 class="text-center py-3">Редактирование тегов:</h3>
     <div class="container col-12 col-md-10">
     <table class="table table-striped">
         <thead>
           <tr>
             <th scope="col"></th>
-            <th scope="col">Тематика</th>
+            <th scope="col">Тэг</th>
             <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
-        {% for newstopic in newstopics %}
+        {% for tag in tags %}
             <tr class="my-auto align-items-center">
                 <th scope="row" class="my-auto py-auto text-center" style="width: 50px;">{{ forloop.counter }}</th>
-                <td class="my-auto py-auto align-items-center">{{ newstopic.description }}</td>
-                <td class="my-1 py-1" style="width: 50px;"><a class="btn btn-success" href="{{ newstopic.get_absolute_url }}">{% bs_icon 'pencil' size='1.3em' %}</a></td>
+                <td class="my-auto py-auto align-items-center">{{ tag.description }}</td>
+                <td class="my-1 py-1" style="width: 50px;"><a class="btn btn-success" href="{{ tag.get_absolute_url }}">{% bs_icon 'pencil' size='1.3em' %}</a></td>
             </tr>
         {% endfor %}
             <form method="post">
+                {% csrf_token %}
                 <tr class="my-auto align-items-center">
                     <th scope="row" class="my-auto text-center" style="width: 50px;"></th>
                     <td class="my-auto py-auto align-items-center">{{ form.description }}</td>
