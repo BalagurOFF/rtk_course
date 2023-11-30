@@ -6,7 +6,7 @@
 
 {% block content %}
     <h1 class="text-center py-3">Авторизация</h1>
-    <form action="{% url 'users:login' %}" class="form col-10 col-lg-8 mx-auto py-2" method="POST">
+    <form class="form col-10 col-lg-8 mx-auto py-2" method="POST">
         {% csrf_token %}
         {% bootstrap_form form %}
         {% bootstrap_button "Войти" button_type="submit" button_class="btn-success float-end" %}

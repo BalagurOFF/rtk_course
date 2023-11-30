@@ -1,6 +1,6 @@
 from django.contrib.auth import logout, authenticate, login, get_user_model, update_session_auth_hash
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, AdminPasswordChangeForm
 from django.shortcuts import render, redirect
 from .forms import *
 
@@ -88,18 +88,27 @@ def logout_user(request):
 
 
 def reset_password(request, id=None):
-    if id == None:
-        customer = request.user
-    else:
-        customer = User.objects.get(pk=id)
+
     if request.method == "POST":
-        form = CustomPasswordChangeForm(user=customer, data=request.POST)
-        if form.is_valid():
-            form.save()
-            update_session_auth_hash(request, form.user)
+        if id is not None:
+            customer = User.objects.get(pk=id)
+            form = AdminPasswordChangeForm(user=customer, data=request.POST)
+            if form.is_valid():
+                form.save()
+        else:
+            customer = request.user
+            form = PasswordChangeForm(user=customer, data=request.POST)
+            if form.is_valid():
+                form.save()
+                update_session_auth_hash(request, form.user)
     else:
-        form = CustomPasswordChangeForm(user=customer)
-    return render(request, 'users/resetpassword.html', {'form': form})
+        if id is not None:
+            customer = User.objects.get(pk=id)
+            form = AdminPasswordChangeForm(user=customer)
+        else:
+            customer = request.user
+            form = PasswordChangeForm(user=customer)
+    return render(request, 'users/resetpassword.html', {'form': form, 'customer': customer})
 
 
 def listusers(request):
@@ -108,41 +117,6 @@ def listusers(request):
         'customers': customers,
     }
     return render(request, 'users/listusers.html', context)
-
-
-def userupdate(request, id=None):
-    if id != None:
-        instance = User.objects.get(pk=id)
-        form = AdminCustumUserChangeForm(instance=instance)
-        context = {
-            'form': form,
-            'customer': instance,
-        }
-        if request.method == "POST":
-            form = UserChangeForm(request.POST, instance=User.objects.get(pk=id))
-            if form.is_valid():
-                print(request.POST)
-                try:
-                    form.save
-                except Exception as err:
-                    print(err)
-            else:
-                print('Форма не валидна')
-            return redirect('users:listusers', permanent=True)
-    else:
-        form = RegistrationForm()
-        context = {
-            'form': form,
-        }
-        if request.method == "POST":
-            form = RegistrationForm(request.POST)
-            if form.is_valid():
-                password1 = form.cleaned_data.get('password1')
-                password2 = form.cleaned_data.get('password2')
-                if password1 == password2:
-                    form.save()
-            return redirect('users:listusers', permanent=True)
-    return render(request, 'users/userupdate.html', context)
 
 
 def removeuser(request, id=None):
