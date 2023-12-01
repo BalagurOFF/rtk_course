@@ -23,12 +23,14 @@
                     <li>
                         <a class="dropdown-item" href="{% url 'users:profile' %}">Личный кабинет</a>
                     </li>
-                    <li>
-                        <a class="dropdown-item" href="{% url 'users:listusers' %}">Пользователи</a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="{% url 'users:resetpassword' %}">Сменить пароль</a>
-                    </li>
+                    {% if perms.user.change_user %}
+                        <li>
+                            <a class="dropdown-item" href="{% url 'users:listusers' %}">Пользователи</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'users:listgroups' %}">Группы доступа</a>
+                        </li>
+                    {% endif %}
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <a class="dropdown-item"  href="{% url 'users:logout' %}">Выход</a>

@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model, password_validation
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm, PasswordChangeForm, \
     SetPasswordForm
+from django.contrib.auth.models import Group
 from django_select2.forms import Select2MultipleWidget
 
 
@@ -68,14 +69,15 @@ class CustumUserChangeForm(AdminCustumUserChangeForm):
         }
 
 
-#class CustomPasswordChangeForm(SetPasswordForm):
-#    old_password = forms.CharField(label='Текущий пароль', widget=forms.PasswordInput(attrs={'class': 'form-control', 'requared': True}))
-#    new_password1 = forms.CharField(label='Новый пароль', widget=forms.PasswordInput(attrs={'class': 'form-control', 'requared': True}), help_text=password_validation.password_validators_help_text_html())
-#    new_password2 = forms.CharField(label='Подтверждение пароля', widget=forms.PasswordInput(attrs={'class': 'form-control', 'requared': True}))
-#    class Meta:
-#        model = get_user_model()
-#        labels = {
-#            'old_password': 'Текущий пароль',
-#            'new_password1': 'Новый пароль',
-#            'new_password2': 'Повторите новый пароль',
-#        },
+class GroupForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        fields = ['name', 'permissions']
+        labels = {
+            'name': 'Имя группы',
+            'permissions': 'Права доступа',
+        }
+        widgets = {
+            'name': forms.TextInput(),
+            'permissions': Select2MultipleWidget(),
+        }

@@ -58,6 +58,10 @@ def new_full(request, id):
 def handler404(request, exception):
     return render(request, '404.html')
 
+
+def handler403(request, exception):
+    return render(request, '403.html')
+
 def moderation(request):
     print(request.POST)
     return HttpResponse(None)

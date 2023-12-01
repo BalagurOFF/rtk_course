@@ -1,6 +1,7 @@
 from django.contrib.auth import logout, authenticate, login, get_user_model, update_session_auth_hash
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import PasswordChangeForm, AdminPasswordChangeForm
+from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 from .forms import *
 
@@ -16,7 +17,7 @@ def registration(request):
             if request.user.has_perm('user.add_user'):
                 form = AdminRegistrationForm(request.POST)
             else:
-                return render(request, 'AccessDenied.html')
+                return render(request, '403.html')
         else:
             form = RegistrationForm(request.POST)
         if form.is_valid():
@@ -35,7 +36,7 @@ def registration(request):
             if request.user.has_perm('user.add_user'):
                 form = AdminRegistrationForm()
             else:
-                return render(request, 'AccessDenied.html')
+                return render(request, '403.html')
         else:
             form = RegistrationForm()
     return render(request, 'users/registration.html', {'form': form})
@@ -64,7 +65,7 @@ def profile(request, id=None):
             instance = request.user
             form = CustumUserChangeForm(instance=instance)
 
-    return render(request, 'users/profile.html', {'form': form})
+    return render(request, 'users/profile.html', {'form': form, 'customer': instance})
 
 
 def login_user(request):
@@ -82,15 +83,17 @@ def login_user(request):
     return render(request, 'users/login.html', {'form': form})
 
 
+@login_required
 def logout_user(request):
     logout(request)
     return redirect('main:news', permanent=True)
 
 
+@login_required
 def reset_password(request, id=None):
 
     if request.method == "POST":
-        if id is not None:
+        if id is not None and request.user.has_perm('user.change_user'):
             customer = User.objects.get(pk=id)
             form = AdminPasswordChangeForm(user=customer, data=request.POST)
             if form.is_valid():
@@ -102,7 +105,7 @@ def reset_password(request, id=None):
                 form.save()
                 update_session_auth_hash(request, form.user)
     else:
-        if id is not None:
+        if id is not None and request.user.has_perm('user.change_user'):
             customer = User.objects.get(pk=id)
             form = AdminPasswordChangeForm(user=customer)
         else:
@@ -111,16 +114,59 @@ def reset_password(request, id=None):
     return render(request, 'users/resetpassword.html', {'form': form, 'customer': customer})
 
 
+@login_required
+@permission_required('user.change_user', raise_exception=True)
 def listusers(request):
-    customers = User.objects.all()
+    customers = User.objects.values('last_name', 'first_name', 'is_active', 'email').order_by('last_name')
     context = {
         'customers': customers,
     }
     return render(request, 'users/listusers.html', context)
 
 
+@login_required
 def removeuser(request, id=None):
-    if id != None:
+    if id is not None:
         entry = User.objects.filter(id=id)
         entry.delete()
     return redirect('users:listusers', permanent=True)
+
+
+@login_required
+@permission_required('user.change_user', raise_exception=True)
+def listgroups(request):
+    groups = Group.objects.all()
+    context = {'groups': groups}
+    return render(request, 'users/listgroups.html', context)
+
+
+@login_required
+@permission_required('user.change_user', raise_exception=True)
+def addgroup(request, id=None):
+    if request.method == 'POST':
+        if id is not None:
+            instance = Group.objects.get(pk=id)
+            form = GroupForm(request.POST, instance=instance)
+        else:
+            form = GroupForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('users:listgroups', permanent=True)
+    context = {}
+    if id is not None:
+        instance = Group.objects.get(pk=id)
+        form = GroupForm(instance=instance)
+        context['group'] = instance
+    else:
+        form = GroupForm()
+    context['form'] = form
+    return render(request, 'users/addgroup.html', context)
+
+
+@login_required
+@permission_required('user.change_user', raise_exception=True)
+def removegroup(request, id=None):
+    if id is not None:
+        entry = Group.objects.filter(id=id)
+        entry.delete()
+    return redirect('users:listgroups', permanent=True)

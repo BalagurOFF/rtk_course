@@ -1,8 +1,6 @@
 from django.urls import path
 from . import views
 
-handler404 = views.handler404
-
 urlpatterns = [
     path('', views.news, name='news'),
     path('news/<int:id>/', views.new_full, name='newsFull'),

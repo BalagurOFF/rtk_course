@@ -2,17 +2,6 @@ from django import forms
 from main.models import NewsModel, TagsModel
 from django_select2.forms import Select2MultipleWidget, Select2Widget
 
-#class RegionWidget(s2forms.ModelSelect2MultipleWidget):
-#    search_fields = [
-#        "description__icontains",
-#    ]
-
-
-#class TopicsWidget(s2forms.ModelSelect2MultipleWidget):
-#    search_fields = [
-#        "description__icontains",
-#    ]
-
 
 class AddNewsForm(forms.ModelForm):
 
@@ -35,16 +24,6 @@ class AddNewsForm(forms.ModelForm):
             'tags': 'Тэги новостей',
             'show_news': 'Отображать новость'
         }
-
-
-
-#class RegionForm(forms.ModelForm):
-#    class Meta:
-#        model = RegionModel
-#        fields = ['description']
-#        widgets = {
-#            'description': forms.TextInput(attrs={'class': 'form-control'}),
-#        }
 
 
 class TagsForm(forms.ModelForm):

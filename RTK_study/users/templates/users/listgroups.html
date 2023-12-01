@@ -1,0 +1,32 @@
+{% extends  'base.html' %}
+{% load bootstrap_icons %}
+{% block title %}
+    Группы доступа
+{% endblock title %}
+
+{% block content %}
+    <h3 class="text-center py-3">Группы доступа:</h3>
+    <div class="container col-12 col-md-10">
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Группа доступа</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for group in groups %}
+            <tr class="my-auto align-items-center">
+                <th scope="row" class="my-auto py-auto text-center" style="width: 50px;">{{ forloop.counter }}</th>
+                <td class="my-auto py-auto">{{ group }}</td>
+                <td class="my-auto py-auto" style="width: 50px;"><a class="btn btn-success py-0 my-0" href="{% url 'users:addgroup' group.id %}">{% bs_icon 'pencil-fill' size='1em' %}</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="d-flex align-items-center justify-content-center py-2">
+        <a class="btn btn-success" href="{% url 'users:addgroup' %}" role="button">Добавить группу</a>
+    </div>
+</div>
+{% endblock content %}

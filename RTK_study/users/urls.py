@@ -11,4 +11,8 @@ urlpatterns = [
     path('resetpassword/<int:id>/', views.reset_password, name='resetpassword'),
     path('listusers/', views.listusers, name='listusers'),
     path('removeuser/<int:id>/', views.removeuser, name='removeUser'),
+    path('listgroups/', views.listgroups, name='listgroups'),
+    path('group/', views.addgroup, name='addgroup'),
+    path('group/<int:id>/', views.addgroup, name='addgroup'),
+    path('removegroup/<int:id>/', views.removegroup, name='removegroup'),
 ]
