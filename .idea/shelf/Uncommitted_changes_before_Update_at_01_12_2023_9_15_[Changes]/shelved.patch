@@ -1,0 +1,384 @@
+Index: RTK_study/users/views.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from django.contrib.auth import logout, authenticate, login, get_user_model, update_session_auth_hash\r\nfrom django.contrib.auth.decorators import login_required, permission_required\r\nfrom django.contrib.auth.forms import UserChangeForm\r\nfrom django.shortcuts import render, redirect\r\nfrom .forms import *\r\n\r\n# from django.contrib.auth.forms import *\r\n\r\n\r\nUser = get_user_model()\r\n\r\n\r\ndef registration(request):\r\n    if request.method == 'POST':\r\n        if request.user.is_authenticated:\r\n            if request.user.has_perm('user.add_user'):\r\n                form = AdminRegistrationForm(request.POST)\r\n            else:\r\n                return render(request, 'AccessDenied.html')\r\n        else:\r\n            form = RegistrationForm(request.POST)\r\n        if form.is_valid():\r\n            username = form.cleaned_data.get('username')\r\n            password1 = form.cleaned_data.get('password1')\r\n            password2 = form.cleaned_data.get('password2')\r\n            if password1 == password2:\r\n                user = form.save()\r\n                if request.user.is_authenticated and request.user.has_perm('user.add_user'):\r\n                    return redirect('users:listusers', permanent=True)\r\n                else:\r\n                    login(request, user)\r\n                    return redirect('users:profile', permanent=True)\r\n    else:\r\n        if request.user.is_authenticated:\r\n            if request.user.has_perm('user.add_user'):\r\n                form = AdminRegistrationForm()\r\n            else:\r\n                return render(request, 'AccessDenied.html')\r\n        else:\r\n            form = RegistrationForm()\r\n    return render(request, 'users/registration.html', {'form': form})\r\n\r\n\r\n@login_required\r\ndef profile(request, id=None):\r\n    if request.method == 'POST':\r\n        if id is not None and request.user.has_perm('user.change_user'):\r\n            instance = User.objects.get(pk=id)\r\n            form = AdminCustumUserChangeForm(request.POST, instance=instance)\r\n            if form.is_valid():\r\n                form.save()\r\n                return redirect('users:listusers', permanent=True)\r\n        else:\r\n            instance = request.user\r\n            form = CustumUserChangeForm(request.POST, instance=instance)\r\n            if form.is_valid():\r\n                form.save()\r\n                return redirect('users:profile', permanent=True)\r\n    else:\r\n        if id is not None and request.user.has_perm('user.change_user'):\r\n            instance = User.objects.get(pk=id)\r\n            form = AdminCustumUserChangeForm(instance=instance)\r\n        else:\r\n            instance = request.user\r\n            form = CustumUserChangeForm(instance=instance)\r\n\r\n    return render(request, 'users/profile.html', {'form': form})\r\n\r\n\r\ndef login_user(request):\r\n    if request.method == 'POST':\r\n        form = LoginUserForm(data=request.POST)\r\n        if form.is_valid():\r\n            username = form.cleaned_data['username']\r\n            password = form.cleaned_data['password']\r\n            user = authenticate(request, username=username, password=password)\r\n            if user and user.is_active:\r\n                login(request, user)\r\n                return redirect('main:news', permanent=True)\r\n    else:\r\n        form = LoginUserForm()\r\n    return render(request, 'users/login.html', {'form': form})\r\n\r\n\r\ndef logout_user(request):\r\n    logout(request)\r\n    return redirect('main:news', permanent=True)\r\n\r\n\r\ndef reset_password(request, id=None):\r\n    if id == None:\r\n        customer = request.user\r\n    else:\r\n        customer = User.objects.get(pk=id)\r\n    if request.method == \"POST\":\r\n        form = CustomPasswordChangeForm(user=customer, data=request.POST)\r\n        if form.is_valid():\r\n            form.save()\r\n            update_session_auth_hash(request, form.user)\r\n    else:\r\n        form = CustomPasswordChangeForm(user=customer)\r\n    return render(request, 'users/resetpassword.html', {'form': form})\r\n\r\n\r\ndef listusers(request):\r\n    customers = User.objects.all()\r\n    context = {\r\n        'customers': customers,\r\n    }\r\n    return render(request, 'users/listusers.html', context)\r\n\r\n\r\ndef userupdate(request, id=None):\r\n    if id != None:\r\n        instance = User.objects.get(pk=id)\r\n        form = AdminCustumUserChangeForm(instance=instance)\r\n        context = {\r\n            'form': form,\r\n            'customer': instance,\r\n        }\r\n        if request.method == \"POST\":\r\n            form = UserChangeForm(request.POST, instance=User.objects.get(pk=id))\r\n            if form.is_valid():\r\n                print(request.POST)\r\n                try:\r\n                    form.save\r\n                except Exception as err:\r\n                    print(err)\r\n            else:\r\n                print('Форма не валидна')\r\n            return redirect('users:listusers', permanent=True)\r\n    else:\r\n        form = RegistrationForm()\r\n        context = {\r\n            'form': form,\r\n        }\r\n        if request.method == \"POST\":\r\n            form = RegistrationForm(request.POST)\r\n            if form.is_valid():\r\n                password1 = form.cleaned_data.get('password1')\r\n                password2 = form.cleaned_data.get('password2')\r\n                if password1 == password2:\r\n                    form.save()\r\n            return redirect('users:listusers', permanent=True)\r\n    return render(request, 'users/userupdate.html', context)\r\n\r\n\r\ndef removeuser(request, id=None):\r\n    if id != None:\r\n        entry = User.objects.filter(id=id)\r\n        entry.delete()\r\n    return redirect('users:listusers', permanent=True)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RTK_study/users/views.py b/RTK_study/users/views.py
+--- a/RTK_study/users/views.py	(revision 4b8236328071d74e9ed84419f5d3b8b7354212d4)
++++ b/RTK_study/users/views.py	(date 1701389668725)
+@@ -1,6 +1,6 @@
+ from django.contrib.auth import logout, authenticate, login, get_user_model, update_session_auth_hash
+ from django.contrib.auth.decorators import login_required, permission_required
+-from django.contrib.auth.forms import UserChangeForm
++from django.contrib.auth.forms import PasswordChangeForm, AdminPasswordChangeForm
+ from django.shortcuts import render, redirect
+ from .forms import *
+ 
+@@ -88,18 +88,27 @@
+ 
+ 
+ def reset_password(request, id=None):
+-    if id == None:
+-        customer = request.user
+-    else:
+-        customer = User.objects.get(pk=id)
++
+     if request.method == "POST":
+-        form = CustomPasswordChangeForm(user=customer, data=request.POST)
+-        if form.is_valid():
+-            form.save()
+-            update_session_auth_hash(request, form.user)
++        if id is not None:
++            customer = User.objects.get(pk=id)
++            form = AdminPasswordChangeForm(user=customer, data=request.POST)
++            if form.is_valid():
++                form.save()
++        else:
++            customer = request.user
++            form = PasswordChangeForm(user=customer, data=request.POST)
++            if form.is_valid():
++                form.save()
++                update_session_auth_hash(request, form.user)
+     else:
+-        form = CustomPasswordChangeForm(user=customer)
+-    return render(request, 'users/resetpassword.html', {'form': form})
++        if id is not None:
++            customer = User.objects.get(pk=id)
++            form = AdminPasswordChangeForm(user=customer)
++        else:
++            customer = request.user
++            form = PasswordChangeForm(user=customer)
++    return render(request, 'users/resetpassword.html', {'form': form, 'customer': customer})
+ 
+ 
+ def listusers(request):
+@@ -110,41 +119,6 @@
+     return render(request, 'users/listusers.html', context)
+ 
+ 
+-def userupdate(request, id=None):
+-    if id != None:
+-        instance = User.objects.get(pk=id)
+-        form = AdminCustumUserChangeForm(instance=instance)
+-        context = {
+-            'form': form,
+-            'customer': instance,
+-        }
+-        if request.method == "POST":
+-            form = UserChangeForm(request.POST, instance=User.objects.get(pk=id))
+-            if form.is_valid():
+-                print(request.POST)
+-                try:
+-                    form.save
+-                except Exception as err:
+-                    print(err)
+-            else:
+-                print('Форма не валидна')
+-            return redirect('users:listusers', permanent=True)
+-    else:
+-        form = RegistrationForm()
+-        context = {
+-            'form': form,
+-        }
+-        if request.method == "POST":
+-            form = RegistrationForm(request.POST)
+-            if form.is_valid():
+-                password1 = form.cleaned_data.get('password1')
+-                password2 = form.cleaned_data.get('password2')
+-                if password1 == password2:
+-                    form.save()
+-            return redirect('users:listusers', permanent=True)
+-    return render(request, 'users/userupdate.html', context)
+-
+-
+ def removeuser(request, id=None):
+     if id != None:
+         entry = User.objects.filter(id=id)
+Index: RTK_study/users/templates/users/profile.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{% extends  'base.html' %}\r\n{% load bootstrap5 %}\r\n{% block title %}\r\n    Профиль пользователя \r\n{% endblock title %}\r\n\r\n{% block content %}\r\n<h1 class=\"text-center py-3\">Профиль пользователя</h1>\r\n<form action=\"{% url 'users:profile' %}\" class=\"form col-10 col-lg-8 mx-auto py-2\" method=\"POST\">\r\n    {% csrf_token %}\r\n    {% bootstrap_form form %}\r\n    {% bootstrap_button \"Изменить данные\" button_type=\"submit\" button_class=\"btn-success float-end\" %}\r\n</form>\r\n{{ form.media.js }}\r\n{% endblock content %}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RTK_study/users/templates/users/profile.html b/RTK_study/users/templates/users/profile.html
+--- a/RTK_study/users/templates/users/profile.html	(revision 4b8236328071d74e9ed84419f5d3b8b7354212d4)
++++ b/RTK_study/users/templates/users/profile.html	(date 1701389668724)
+@@ -6,7 +6,7 @@
+ 
+ {% block content %}
+ <h1 class="text-center py-3">Профиль пользователя</h1>
+-<form action="{% url 'users:profile' %}" class="form col-10 col-lg-8 mx-auto py-2" method="POST">
++<form class="form col-10 col-lg-8 mx-auto py-2" method="POST">
+     {% csrf_token %}
+     {% bootstrap_form form %}
+     {% bootstrap_button "Изменить данные" button_type="submit" button_class="btn-success float-end" %}
+Index: RTK_study/users/forms.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from django import forms\r\nfrom django.contrib.auth import get_user_model, password_validation\r\nfrom django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm, PasswordChangeForm, \\\r\n    SetPasswordForm\r\nfrom django_select2.forms import Select2MultipleWidget\r\n\r\n\r\nclass LoginUserForm(AuthenticationForm):\r\n    username = forms.CharField(label='Имя пользователя', widget=forms.TextInput(attrs={'class': 'form-control'}))\r\n    password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-control'}))\r\n\r\n\r\nclass RegistrationForm(UserCreationForm):\r\n    class Meta:\r\n        model = get_user_model()\r\n        fields = ['username', 'password1', 'password2', 'first_name', 'last_name', 'email']\r\n        labels = {\r\n            'username': 'Логин',\r\n            'password1': 'Пароль',\r\n            'password2': 'Повторите пароль',\r\n            'first_name': 'Имя',\r\n            'last_name': 'Фамилия',\r\n            'email': 'Email',\r\n        }\r\n        widgets = {\r\n            'username': forms.TextInput(attrs={'required': True}),\r\n            'password1': forms.PasswordInput(attrs={'required': True}),\r\n            'password2': forms.PasswordInput(attrs={'required': True}),\r\n            'first_name': forms.TextInput(attrs={'required': True}),\r\n            'last_name': forms.TextInput(attrs={'required': False}),\r\n            'email': forms.TextInput(attrs={'required': False}),\r\n        }\r\n\r\n\r\nclass AdminRegistrationForm(UserCreationForm):\r\n    class Meta:\r\n        model = get_user_model()\r\n        fields = ['username', 'password1', 'password2', 'first_name', 'last_name','email', 'groups']\r\n        labels = {\r\n            'username': 'Логин',\r\n            'password1': 'Пароль',\r\n            'password2': 'Повторите пароль',\r\n            'first_name': 'Имя',\r\n            'last_name': 'Фамилия',\r\n            'email': 'Email',\r\n            'groups': 'Группы пользователя'\r\n        }\r\n        widgets = {\r\n            'username': forms.TextInput(attrs={'required': True}),\r\n            'password1': forms.PasswordInput(attrs={'required': True}),\r\n            'password2': forms.PasswordInput(attrs={'required': True}),\r\n            'first_name': forms.TextInput(attrs={'required': True}),\r\n            'last_name': forms.TextInput(attrs={'required': False}),\r\n            'email': forms.TextInput(attrs={'required': False}),\r\n            'groups': Select2MultipleWidget(),\r\n        }\r\n\r\n\r\nclass CustumUserChangeForm(forms.ModelForm):\r\n\r\n    class Meta:\r\n        model = get_user_model()\r\n        fields = ['username', 'email', 'first_name', 'last_name']\r\n        labels = {\r\n            'username': 'Имя пользователя',\r\n            'email': 'Email',\r\n            'first_name': 'Имя',\r\n            'last_name': 'Фамилия',\r\n        },\r\n        widgets = {\r\n            'username': forms.TextInput(attrs={'readonly': True}),\r\n        }\r\n\r\n\r\nclass AdminCustumUserChangeForm(forms.ModelForm):\r\n\r\n    class Meta:\r\n        model = get_user_model()\r\n        fields = ['username', 'email', 'first_name', 'last_name', 'description', 'groups']\r\n        labels = {\r\n            'username': 'Имя пользователя',\r\n            'email': 'Email',\r\n            'first_name': 'Имя',\r\n            'last_name': 'Фамилия',\r\n            'description': 'Занимаемая должность',\r\n            'groups': 'Группы пользователя',\r\n        },\r\n        widgets = {\r\n            'username': forms.TextInput(attrs={'readonly': True}),\r\n            'groups': Select2MultipleWidget(),\r\n        }\r\n\r\n\r\nclass CustomPasswordChangeForm(SetPasswordForm):\r\n#    old_password = forms.CharField(label='Текущий пароль', widget=forms.PasswordInput(attrs={'class': 'form-control', 'requared': True}))\r\n    new_password1 = forms.CharField(label='Новый пароль', widget=forms.PasswordInput(attrs={'class': 'form-control', 'requared': True}), help_text=password_validation.password_validators_help_text_html())\r\n    new_password2 = forms.CharField(label='Подтверждение пароля', widget=forms.PasswordInput(attrs={'class': 'form-control', 'requared': True}))\r\n    class Meta:\r\n        model = get_user_model()\r\n#        labels = {\r\n#            'old_password': 'Текущий пароль',\r\n#            'new_password1': 'Новый пароль',\r\n#            'new_password2': 'Повторите новый пароль',\r\n#        },\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RTK_study/users/forms.py b/RTK_study/users/forms.py
+--- a/RTK_study/users/forms.py	(revision 4b8236328071d74e9ed84419f5d3b8b7354212d4)
++++ b/RTK_study/users/forms.py	(date 1701389668723)
+@@ -10,32 +10,10 @@
+     password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+ 
+ 
+-class RegistrationForm(UserCreationForm):
+-    class Meta:
+-        model = get_user_model()
+-        fields = ['username', 'password1', 'password2', 'first_name', 'last_name', 'email']
+-        labels = {
+-            'username': 'Логин',
+-            'password1': 'Пароль',
+-            'password2': 'Повторите пароль',
+-            'first_name': 'Имя',
+-            'last_name': 'Фамилия',
+-            'email': 'Email',
+-        }
+-        widgets = {
+-            'username': forms.TextInput(attrs={'required': True}),
+-            'password1': forms.PasswordInput(attrs={'required': True}),
+-            'password2': forms.PasswordInput(attrs={'required': True}),
+-            'first_name': forms.TextInput(attrs={'required': True}),
+-            'last_name': forms.TextInput(attrs={'required': False}),
+-            'email': forms.TextInput(attrs={'required': False}),
+-        }
+-
+-
+ class AdminRegistrationForm(UserCreationForm):
+     class Meta:
+         model = get_user_model()
+-        fields = ['username', 'password1', 'password2', 'first_name', 'last_name','email', 'groups']
++        fields = ['username', 'password1', 'password2', 'first_name', 'last_name', 'email', 'groups']
+         labels = {
+             'username': 'Логин',
+             'password1': 'Пароль',
+@@ -43,7 +21,7 @@
+             'first_name': 'Имя',
+             'last_name': 'Фамилия',
+             'email': 'Email',
+-            'groups': 'Группы пользователя'
++            'groups': 'Группы пользователя',
+         }
+         widgets = {
+             'username': forms.TextInput(attrs={'required': True}),
+@@ -56,47 +34,46 @@
+         }
+ 
+ 
+-class CustumUserChangeForm(forms.ModelForm):
+-
+-    class Meta:
+-        model = get_user_model()
+-        fields = ['username', 'email', 'first_name', 'last_name']
+-        labels = {
+-            'username': 'Имя пользователя',
+-            'email': 'Email',
+-            'first_name': 'Имя',
+-            'last_name': 'Фамилия',
+-        },
+-        widgets = {
+-            'username': forms.TextInput(attrs={'readonly': True}),
+-        }
++class RegistrationForm(AdminRegistrationForm):
++    class Meta(AdminRegistrationForm.Meta):
++        exclude = ['groups']
+ 
+ 
+ class AdminCustumUserChangeForm(forms.ModelForm):
+ 
+     class Meta:
+         model = get_user_model()
+-        fields = ['username', 'email', 'first_name', 'last_name', 'description', 'groups']
++        fields = ['username', 'email', 'first_name', 'last_name', 'groups']
+         labels = {
+             'username': 'Имя пользователя',
+             'email': 'Email',
+             'first_name': 'Имя',
+             'last_name': 'Фамилия',
+-            'description': 'Занимаемая должность',
+             'groups': 'Группы пользователя',
+-        },
++        }
++        widgets = {
++            'username': forms.TextInput(),
++            'email': forms.TextInput(),
++            'first_name': forms.TextInput(),
++            'last_name': forms.TextInput(),
++            'groups': Select2MultipleWidget(),
++        }
++
++
++class CustumUserChangeForm(AdminCustumUserChangeForm):
++    class Meta(AdminCustumUserChangeForm.Meta):
++        exclude = ['groups']
+         widgets = {
+             'username': forms.TextInput(attrs={'readonly': True}),
+-            'groups': Select2MultipleWidget(),
+         }
+ 
+ 
+-class CustomPasswordChangeForm(SetPasswordForm):
++#class CustomPasswordChangeForm(SetPasswordForm):
+ #    old_password = forms.CharField(label='Текущий пароль', widget=forms.PasswordInput(attrs={'class': 'form-control', 'requared': True}))
+-    new_password1 = forms.CharField(label='Новый пароль', widget=forms.PasswordInput(attrs={'class': 'form-control', 'requared': True}), help_text=password_validation.password_validators_help_text_html())
+-    new_password2 = forms.CharField(label='Подтверждение пароля', widget=forms.PasswordInput(attrs={'class': 'form-control', 'requared': True}))
+-    class Meta:
+-        model = get_user_model()
++#    new_password1 = forms.CharField(label='Новый пароль', widget=forms.PasswordInput(attrs={'class': 'form-control', 'requared': True}), help_text=password_validation.password_validators_help_text_html())
++#    new_password2 = forms.CharField(label='Подтверждение пароля', widget=forms.PasswordInput(attrs={'class': 'form-control', 'requared': True}))
++#    class Meta:
++#        model = get_user_model()
+ #        labels = {
+ #            'old_password': 'Текущий пароль',
+ #            'new_password1': 'Новый пароль',
+Index: readme.md
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># Здравствуйте! Меня зовут Александр.\r\n### Этот репозиторий создан для учебного проекта на Django\r\n\r\n### Заведен тестовый пользователь с данными для авторизации user/user_123\r\n\r\n#### Список задач, которые нужно решить в этом проекте:\r\n\r\n- [x] Изучение и создание шаблонов Django Templates.\r\n  - [x] Создание базовых (общих) шаблонов\r\n    - [x] Базовый шаблон\r\n    - [x] Шаблон бокового меню\r\n    - [x] Шаблон верхнего меню\r\n    - [x] Шаблон футера\r\n    - [x] Шаблон страницы 404\r\n  - [ ] Создание шаблонов для администрирования юзеров\r\n    - [x] Шаблон для входа юзера\r\n    - [x] Шаблон редактирования профиля юзера\r\n    - [x] Шаблон для регистрации\r\n    - [x] Шаблон для смены пароля\r\n    - [x] Шаблон для списка редактирования юзеров для IT-специалистов\r\n  - [x] Создание шаблонов для администрирования новостей\r\n    - [x] Шаблон для создания, редактирования и удаления новостей\r\n    - [x] Шаблон для списка администрирования новостей\r\n  - [ ] Шаблоны для показа новостей\r\n    - [x] Шаблон для списка новостей\r\n    - [ ] Шаблон для показа новости с функией модерации комментариев\r\n- [x] Изучение и настройка диспетчера URL.\r\n- [x] Изучение и создание моделей Django.\r\n  - [x] Модель для хранения учетных записей юзеров (AbstractModel).\r\n  - [x] Модель для хранения публикаций.\r\n  - [x] Модель для комментариев.\r\n  - [x] Модель для регионов новостей.\r\n  - [x] Модель для тематик новостей.\r\n- [x] Изучение и создание форм Django.\r\n  - [x] Форма авторизации\r\n  - [x] Форма регистрации\r\n  - [x] Форма профиля\r\n  - [x] Форма смены пароля\r\n  - [x] Форма добавления комментариев\r\n  - [x] Форма добавления и изменения публикации\r\n  - [x] Форма добавления региона новостей\r\n  - [x] Форма добавления тематики новостей\r\n- [x] Создание приложения для администрирования пользователей.\r\n  - [x] Страница авторизации\r\n  - [x] Страница регистрации\r\n  - [x] Страница смены пароля\r\n  - [x] Страница редактирования профиля\r\n  - [x] Ссылка выхода из профиля\r\n  - [x] Страница списка юзеров для администраторов\r\n  - [ ] Страница создания и редактирования юзеров для администраторов\r\n- [x] Создание приложения для администрирования публикаций.\r\n  - [x] Создание страница администрирования новостей для пользователей\r\n  - [x] Создание страницы для создания, редактирования и удаления новости\r\n  - [ ] Создание страницы для администрирования новостей для руководства\r\n  - [x] Создание страницы для администрирования регионов\r\n  - [x] Создание страницы для администрирования тематик новостей\r\n  - [x] Создание страницы для создания, изменения и удаления региона\r\n  - [x] Создание страницы для создания, изменения и удаления тематик новостей\r\n- [x] Создание приложения для отображения публикаций\r\n  - [x] Создание страницы списка новостей с пагинацией\r\n  - [x] Страница чтения новости с комментариями\r\n- [ ] Настройка доступа к страницам приложений.\r\n  - [ ] Создание страницы для администрирования групп доступа.\r\n  - [ ] Распределение прав для приложения отображения новостей\r\n  - [ ] Распределение прав для приложения администрирования юзеров\r\n  - [ ] Распределение прав для приложения администрирования новостей\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/readme.md b/readme.md
+--- a/readme.md	(revision 4b8236328071d74e9ed84419f5d3b8b7354212d4)
++++ b/readme.md	(date 1701389668725)
+@@ -12,12 +12,15 @@
+     - [x] Шаблон верхнего меню
+     - [x] Шаблон футера
+     - [x] Шаблон страницы 404
++    - [x] Шаблон для страницы AccessDenied
+   - [ ] Создание шаблонов для администрирования юзеров
+     - [x] Шаблон для входа юзера
+-    - [x] Шаблон редактирования профиля юзера
++    - [ ] Шаблон редактирования профиля юзера
+     - [x] Шаблон для регистрации
+     - [x] Шаблон для смены пароля
+     - [x] Шаблон для списка редактирования юзеров для IT-специалистов
++    - [ ] Шаблон для списка групп доступа
++    - [ ] Шаблон для создания и редактирования группы доступа
+   - [x] Создание шаблонов для администрирования новостей
+     - [x] Шаблон для создания, редактирования и удаления новостей
+     - [x] Шаблон для списка администрирования новостей
+@@ -29,8 +32,9 @@
+   - [x] Модель для хранения учетных записей юзеров (AbstractModel).
+   - [x] Модель для хранения публикаций.
+   - [x] Модель для комментариев.
+-  - [x] Модель для регионов новостей.
+-  - [x] Модель для тематик новостей.
++  ~~- [x] Модель для регионов новостей.~~
++  ~~- [x] Модель для тематик новостей.~~
++  - [x] Модель тэгов новостей
+ - [x] Изучение и создание форм Django.
+   - [x] Форма авторизации
+   - [x] Форма регистрации
+@@ -38,29 +42,34 @@
+   - [x] Форма смены пароля
+   - [x] Форма добавления комментариев
+   - [x] Форма добавления и изменения публикации
+-  - [x] Форма добавления региона новостей
+-  - [x] Форма добавления тематики новостей
++  ~~- [x] Форма добавления региона новостей~~
++  ~~- [x] Форма добавления тематики новостей~~
++  - [x] Форма добавления и редактирования тэгов новостей
+ - [x] Создание приложения для администрирования пользователей.
+   - [x] Страница авторизации
+-  - [x] Страница регистрации
++  - [x] Страница самостоятельной регистрации юзеров и создание юзеров админами
+   - [x] Страница смены пароля
+-  - [x] Страница редактирования профиля
++  - [x] Страница редактирования профиля юзером и админом
+   - [x] Ссылка выхода из профиля
+-  - [x] Страница списка юзеров для администраторов
+-  - [ ] Страница создания и редактирования юзеров для администраторов
++  - [x] Страница списка юзеров для админов
++  - [ ] Страница списка групп доступа
++  - [ ] Страница создания и редактирования группы доступа
++  ~~- [x] Страница создания юзеров для администраторов~~
++  ~~- [x] Страница создания и редактирования юзеров для администраторов~~
+ - [x] Создание приложения для администрирования публикаций.
+   - [x] Создание страница администрирования новостей для пользователей
+   - [x] Создание страницы для создания, редактирования и удаления новости
+   - [ ] Создание страницы для администрирования новостей для руководства
+-  - [x] Создание страницы для администрирования регионов
+-  - [x] Создание страницы для администрирования тематик новостей
+-  - [x] Создание страницы для создания, изменения и удаления региона
+-  - [x] Создание страницы для создания, изменения и удаления тематик новостей
++  - [x] Создание страницы для списка администрирования тэгов
++  - [x] Создание страницы для создания, изменения и удаления тэгов
++  ~~- [x] Создание страницы для администрирования регионов~~
++  ~~- [x] Создание страницы для администрирования тематик новостей~~
++  ~~- [x] Создание страницы для создания, изменения и удаления региона~~
++  ~~- [x] Создание страницы для создания, изменения и удаления тематик новостей~~
+ - [x] Создание приложения для отображения публикаций
+   - [x] Создание страницы списка новостей с пагинацией
+   - [x] Страница чтения новости с комментариями
+ - [ ] Настройка доступа к страницам приложений.
+-  - [ ] Создание страницы для администрирования групп доступа.
+   - [ ] Распределение прав для приложения отображения новостей
+   - [ ] Распределение прав для приложения администрирования юзеров
+   - [ ] Распределение прав для приложения администрирования новостей
+Index: RTK_study/users/templates/users/resetpassword.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{% extends  'base.html' %}\r\n{% load bootstrap5 %}\r\n{% block title %}\r\n    Изменение пароля\r\n{% endblock title %}\r\n\r\n{% block content %}\r\n    <h1 class=\"text-center py-3\">Изменение пароля</h1>\r\n    <form action=\"{% url 'users:resetpassword' %}\" class=\"form col-10 col-lg-8 mx-auto py-2\" method=\"POST\">\r\n        {% csrf_token %}\r\n        {% bootstrap_form form %}\r\n        {% bootstrap_button \"Изменить пароль\" button_type=\"submit\" button_class=\"btn-success float-end\" %}\r\n    </form>\r\n{% endblock content %}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RTK_study/users/templates/users/resetpassword.html b/RTK_study/users/templates/users/resetpassword.html
+--- a/RTK_study/users/templates/users/resetpassword.html	(revision 4b8236328071d74e9ed84419f5d3b8b7354212d4)
++++ b/RTK_study/users/templates/users/resetpassword.html	(date 1701389668724)
+@@ -5,8 +5,8 @@
+ {% endblock title %}
+ 
+ {% block content %}
+-    <h1 class="text-center py-3">Изменение пароля</h1>
+-    <form action="{% url 'users:resetpassword' %}" class="form col-10 col-lg-8 mx-auto py-2" method="POST">
++    <h1 class="text-center py-3">Изменение пароля {{ customer.last_name }} {{ customer.first_name }}</h1>
++    <form class="form col-10 col-lg-8 mx-auto py-2" method="POST">
+         {% csrf_token %}
+         {% bootstrap_form form %}
+         {% bootstrap_button "Изменить пароль" button_type="submit" button_class="btn-success float-end" %}
+Index: RTK_study/users/templates/users/login.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{% extends  'base.html' %}\r\n{% load bootstrap5 %}\r\n{% block title %}\r\n    Авторизация\r\n{% endblock title %}\r\n\r\n{% block content %}\r\n    <h1 class=\"text-center py-3\">Авторизация</h1>\r\n    <form action=\"{% url 'users:login' %}\" class=\"form col-10 col-lg-8 mx-auto py-2\" method=\"POST\">\r\n        {% csrf_token %}\r\n        {% bootstrap_form form %}\r\n        {% bootstrap_button \"Войти\" button_type=\"submit\" button_class=\"btn-success float-end\" %}\r\n    </form>\r\n{% endblock content %}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RTK_study/users/templates/users/login.html b/RTK_study/users/templates/users/login.html
+--- a/RTK_study/users/templates/users/login.html	(revision 4b8236328071d74e9ed84419f5d3b8b7354212d4)
++++ b/RTK_study/users/templates/users/login.html	(date 1701389668723)
+@@ -6,7 +6,7 @@
+ 
+ {% block content %}
+     <h1 class="text-center py-3">Авторизация</h1>
+-    <form action="{% url 'users:login' %}" class="form col-10 col-lg-8 mx-auto py-2" method="POST">
++    <form class="form col-10 col-lg-8 mx-auto py-2" method="POST">
+         {% csrf_token %}
+         {% bootstrap_form form %}
+         {% bootstrap_button "Войти" button_type="submit" button_class="btn-success float-end" %}
+Index: RTK_study/users/templates/users/registration.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{% extends  'base.html' %}\r\n{% load bootstrap5 %}\r\n{% block title %}\r\n    Регистрация\r\n{% endblock title %}\r\n\r\n{% block content %}\r\n<h1 class=\"text-center py-3\">Регистрация нового пользователя</h1>\r\n<form action=\"{% url 'users:registration' %}\" class=\"form col-10 col-lg-8 mx-auto py-2\" method=\"POST\">\r\n    {% csrf_token %}\r\n    {% bootstrap_form form %}\r\n    {% bootstrap_button \"Регистрация\" button_type=\"submit\" button_class=\"btn-success float-end\" %}\r\n</form>\r\n{{ form.media.js }}\r\n{% endblock content %}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RTK_study/users/templates/users/registration.html b/RTK_study/users/templates/users/registration.html
+--- a/RTK_study/users/templates/users/registration.html	(revision 4b8236328071d74e9ed84419f5d3b8b7354212d4)
++++ b/RTK_study/users/templates/users/registration.html	(date 1701389668724)
+@@ -6,7 +6,7 @@
+ 
+ {% block content %}
+ <h1 class="text-center py-3">Регистрация нового пользователя</h1>
+-<form action="{% url 'users:registration' %}" class="form col-10 col-lg-8 mx-auto py-2" method="POST">
++<form class="form col-10 col-lg-8 mx-auto py-2" method="POST">
+     {% csrf_token %}
+     {% bootstrap_form form %}
+     {% bootstrap_button "Регистрация" button_type="submit" button_class="btn-success float-end" %}
