@@ -12,7 +12,7 @@
       <div class="container mt-3">
         <form action="{% url 'main:news' %}" class="d-flex justify-content-end" method="POST">
           {% csrf_token %}
-          <input class="form-control me-2" type="search" placeholder="Найти" aria-label="Search">
+          <input class="form-control me-2" type="search" placeholder="Найти" aria-label="Search" name="search_string" title="Поиск по содержанию строки в имени новости, полном тексте, авторе или тэгах">
           <button class="btn btn-success" type="submit">Поиск</button>
         </form>
       </div>

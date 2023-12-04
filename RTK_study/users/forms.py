@@ -28,9 +28,9 @@ class AdminRegistrationForm(UserCreationForm):
             'username': forms.TextInput(attrs={'required': True}),
             'password1': forms.PasswordInput(attrs={'required': True}),
             'password2': forms.PasswordInput(attrs={'required': True}),
-            'first_name': forms.TextInput(attrs={'required': True}),
-            'last_name': forms.TextInput(attrs={'required': False}),
-            'email': forms.TextInput(attrs={'required': False}),
+            'first_name': forms.TextInput(attrs={'required': True, 'title': 'Имя'}),
+            'last_name': forms.TextInput(attrs={'required': False, 'title': 'Фамилия'}),
+            'email': forms.TextInput(attrs={'required': False, 'title': 'Адрес электронной почты'}),
             'groups': Select2MultipleWidget(),
         }
 

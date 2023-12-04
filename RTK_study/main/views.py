@@ -1,6 +1,7 @@
 import datetime
-
+from django.db.models import Q, Value, F, CharField
 from django.db.models import Count
+from django.db.models.functions import Concat
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import TagsModel, NewsCommentsModel, NewsModel
@@ -23,12 +24,27 @@ def contacts(request):
 
 
 def news(request):
-    tags = TagsModel.objects.order_by('description')
-    autors = User.objects.order_by('last_name')
-    paginator = Paginator(NewsModel.objects.annotate(comments=Count('newscommentsmodel')).order_by('-date_pub')[:600], 12)
-    page_number = request.GET.get('page')
-    newslist = paginator.get_page(page_number)
-    context = {'newslist': newslist, 'tags': tags, 'autors': autors}
+    if request.method == 'POST':
+        search_string = request.POST.get('search_string')
+        paginator = Paginator(NewsModel.objects.filter(Q(show_news = True) &
+                                                       (
+                                                            Q(name__icontains=search_string) |
+                                                            Q(name__icontains=search_string) |
+                                                            Q(autor__last_name__icontains=search_string) |
+                                                            Q(autor__first_name__icontains=search_string) |
+                                                            Q(tags__description__icontains=search_string)
+                                                       )
+        ).annotate(comments=Count('newscommentsmodel', distinct=True),
+                    newsautor = Concat(F('autor__last_name'), F('autor__first_name'), output_field=CharField())).order_by('-date_pub')[:600], 12)
+        page_number = request.GET.get('page')
+        newslist = paginator.get_page(page_number)
+        context = {'newslist': newslist}
+    else:
+        paginator = Paginator(NewsModel.objects.filter(show_news = True).annotate(comments=Count('newscommentsmodel', distinct=True),
+                                                         newsautor = Concat(F('autor__last_name'), F('autor__first_name'), output_field=CharField())).order_by('-date_pub')[:600], 12)
+        page_number = request.GET.get('page')
+        newslist = paginator.get_page(page_number)
+        context = {'newslist': newslist}
     return render(request, 'main/news.html', context)
 
 
