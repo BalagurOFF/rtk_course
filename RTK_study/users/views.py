@@ -117,7 +117,7 @@ def reset_password(request, id=None):
 @login_required
 @permission_required('user.change_user', raise_exception=True)
 def listusers(request):
-    customers = User.objects.values('last_name', 'first_name', 'is_active', 'email').order_by('last_name')
+    customers = User.objects.all().order_by('last_name')
     context = {
         'customers': customers,
     }

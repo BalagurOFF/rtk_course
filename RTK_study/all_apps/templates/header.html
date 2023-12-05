@@ -20,6 +20,11 @@
                     <li>
                         <a class="dropdown-item" href="{% url 'contentmanagment:tags' %}">Тэги новостей</a>
                     </li>
+                    {% if perms.newsmodel.change_newsmodel %}
+                        <li>
+                            <a class="dropdown-item" href="{% url 'contentmanagment:admin-newslist' %}">Публикации пользователей</a>
+                        </li>
+                    {% endif %}
                     <li>
                         <a class="dropdown-item" href="{% url 'users:profile' %}">Личный кабинет</a>
                     </li>

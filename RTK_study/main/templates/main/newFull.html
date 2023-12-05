@@ -32,9 +32,10 @@
                     {{ paragraph }}
                 </p>
             {% endfor %}
+
            <div>
                <script>
-                    function sendForm()
+                    function sendModeration()
                         {
                             document.getElementById("moderation").submit();
                         }
@@ -44,10 +45,10 @@
                     <p class="text-secondary">{{ comment.user__last_name }} {{ comment.user__first_name }}:</p>
                     <p class="text-start">{{ comment.text }}</p>
                     <p class="text-secondary text-end">Дата: {{ comment.date_comment }}</p>
-                    <p class="text-secondary text-end">Показывать комментарий: <input class="form-check-input" type="checkbox" {% if comment.show_comment %}checked{% endif %} form="moderation" onclick="sendForm()"></p>
+                    {% if perms.newscommentsmodel.change_newscommentsmodel %}<p class="text-secondary text-end">Показывать комментарий: <input class="form-check-input" type="checkbox" {% if comment.show_comment %}checked{% endif %} onclick="sendModeration()"></p>{% endif %}
                 {% endfor %}
            </div>
-           {% if user.is_authenticated %}
+           {% if perms.newscommentsmodel.add_newscommentsmodel %}
            <hr class="mt-5">
            <form method="POST" class="py-2">
                 {% csrf_token %}
@@ -56,5 +57,6 @@
            </form>
            {% endif %}
         </div>
+
     </div>
 {% endblock content %}

@@ -1,0 +1,36 @@
+{% extends  'base.html' %}
+{% load bootstrap_icons %}
+{% block title %}
+    Публикации
+{% endblock title %}
+
+{% block content %}
+    <h3 class="text-center py-3">Публикации:</h3>
+    <div class="container col-12 col-md-10">
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Публикация</th>
+            <th scope="col">Автор</th>
+            <th scope="col">Отображать в ленте</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for news in newslist.object_list %}
+            <tr class="my-auto align-items-center">
+                <th scope="row" class="my-auto">{{ forloop.counter }}</th>
+                <td class="my-auto align-items-center">{{ news.name|truncatewords:8 }}</td>
+                <td class="my-auto align-items-center">{{ news.autor.last_name }} {{ news.autor.first_name|slice:":1" }}.</td>
+                <td class="my-auto align-items-center">{% if news.show_news %}{% bs_icon 'check-circle' size='1.5em' %}{% else %}{% bs_icon 'x-circle' size='1.5em' %}{% endif %}</td>
+                <td class="my-auto"><a class="btn btn-success my-0 py-0" href="{% url 'contentmanagment:addNews' news.id %}">Редактировать</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="d-flex align-items-center justify-content-center py-2">
+        {% include 'render_pagination.html' with pagination=newslist %}
+    </div>
+</div>
+{% endblock content %}
