@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator
 from django.db.models import F, CharField
 from django.db.models.functions import Concat
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 
 from .forms import AddNewsForm, TagsForm
@@ -25,7 +26,9 @@ def addnews(request, news_id=None):
                 form.save_m2m()
             else:
                 form.save()
-        return redirect('contentmanagment:news-list', permanent=True)
+        url_referer = request.session['url_referer']
+        return HttpResponseRedirect(url_referer)
+    request.session['url_referer'] = request.META.get('HTTP_REFERER')
     context['form'] = form
     context['news'] = instance
     return render(request, 'contentmanagment/addnews.html', context)
@@ -38,8 +41,7 @@ def newschange(request):
 
 
 def removenews(request, news_id):
-    entry = NewsModel.objects.filter(id=news_id)
-    entry.delete()
+    NewsModel.objects.filter(id=news_id).delete()
     return redirect('contentmanagment:news-list', permanent=True)
 
 
@@ -78,3 +80,9 @@ def administratenews(request):
     newslist = paginator.get_page(page_number)
     context = {'newslist': newslist}
     return render(request, 'contentmanagment/adminlist.html', context)
+
+
+def removetag(request, id=None):
+    if id is not None:
+        TagsModel.objects.filter(id=id).delete()
+        return redirect('contentmanagment:tags', permanent=True)

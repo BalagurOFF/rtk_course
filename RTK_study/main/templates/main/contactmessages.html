@@ -1,0 +1,35 @@
+{% extends  'base.html' %}
+{% load bootstrap5 %}
+{% block title %}
+    Сообщения для администрации
+{% endblock title %}
+
+{% block content %}
+        <h2 class="text-center">Сообщения для администрации</h2>
+        <div class="container col-12 col-md-10">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Отправитель</th>
+                        <th scope="col">Контакт</th>
+                        <th scope="col">Дата сообщения</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for message in page_obj %}
+                        <tr class="my-auto align-items-center">
+                            <th scope="row" class="my-auto py-auto text-center" style="width: 50px;">{{ forloop.counter }}</th>
+                            <td class="my-auto py-auto"><a href="{{ message.get_absolute_url }}">{{ message.sender }}</a></td>
+                            <td class="my-auto py-auto">{{ message.contact }}</td>
+                            <td class="my-auto py-auto">{{ message.date_message }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="d-flex align-items-center justify-content-center py-2">
+                {% include 'render_pagination.html' with pagination=page_obj %}
+            </div>
+        </div>
+{% endblock content %}

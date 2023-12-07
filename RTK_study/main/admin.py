@@ -1,6 +1,5 @@
 from django.contrib import admin
 from .models import *
-from contentmanagment.forms import AddNewsForm
 
 
 class TagsAdmin(admin.ModelAdmin):
@@ -16,5 +15,10 @@ class NewsAdmin(admin.ModelAdmin):
     search_fields = ['name', 'autor__username', 'autor__last_name']
 
 
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ['date_message', 'sender', 'contact', 'message']
+
+
 admin.site.register(TagsModel, TagsAdmin)
 admin.site.register(NewsModel, NewsAdmin)
+admin.site.register(ContactModel, ContactAdmin)

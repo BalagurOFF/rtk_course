@@ -4,10 +4,11 @@ from django.db.models import Count
 from django.db.models.functions import Concat
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from .models import TagsModel, NewsCommentsModel, NewsModel
+from .models import TagsModel, NewsCommentsModel, NewsModel, ContactModel
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
 from .forms import AddCommentForm, ContactForm
+from django.views.generic import ListView, DetailView
 
 
 User=get_user_model()
@@ -16,11 +17,28 @@ def about(request):
 
 
 def contacts(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()
     if request.user.is_authenticated:
-        form = ContactForm(initial={"name": request.user.get_full_name(), "email": request.user.email})
+        form = ContactForm(initial={"sender": request.user.get_full_name(), "contact": request.user.email})
     else:
         form = ContactForm()
     return render(request, 'main/contacts.html', {'form': form})
+
+
+class ContactMessages(ListView):
+    model = ContactModel
+    template_name = 'main/contactmessages.html'
+    context_object_name = 'messages'
+    paginate_by = 20
+
+
+class ContactMessageDetail(DetailView):
+    model = ContactModel
+    template_name = 'main/contactmessagedetail.html'
+    context_object_name = 'message'
 
 
 def news(request):

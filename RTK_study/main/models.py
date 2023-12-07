@@ -43,3 +43,19 @@ class NewsCommentsModel(models.Model):
     news = models.ForeignKey(NewsModel, on_delete=models.CASCADE)
     text = models.TextField(max_length=10000, blank=True)
     show_comment = models.BooleanField(default=True)
+
+
+class ContactModel(models.Model):
+    date_message = models.DateTimeField(auto_now=True)
+    sender = models.TextField(max_length=100, blank=False)
+    contact = models.TextField(max_length=100, blank=False)
+    message = models.TextField(max_length=10000, blank=False)
+
+    class Meta:
+        verbose_name_plural = 'Сообщения для администрации'
+
+    def __str__(self):
+        return self.contact
+
+    def get_absolute_url(self):
+        return reverse('main:messagedetail', kwargs={"pk": self.pk})
