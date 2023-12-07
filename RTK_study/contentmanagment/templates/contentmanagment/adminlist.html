@@ -13,18 +13,16 @@
             <th scope="col"></th>
             <th scope="col">Публикация</th>
             <th scope="col">Автор</th>
-            <th scope="col">Отображать в ленте</th>
-            <th scope="col"></th>
+            <th scope="col">Лента</th>
           </tr>
         </thead>
         <tbody>
         {% for news in newslist.object_list %}
-            <tr class="my-auto align-items-center">
+            <tr class="my-auto align-items-center" style="transform: rotate(0);">
                 <th scope="row" class="my-auto">{{ forloop.counter }}</th>
-                <td class="my-auto align-items-center">{{ news.name|truncatewords:8 }}</td>
+                <td class="my-auto align-items-center"><a class="link-dark text-decoration-none stretched-link" href="{% url 'contentmanagment:addNews' news.id %}">{{ news.name|truncatewords:8 }}</a></td>
                 <td class="my-auto align-items-center">{{ news.autor.last_name }} {{ news.autor.first_name|slice:":1" }}.</td>
                 <td class="my-auto align-items-center">{% if news.show_news %}{% bs_icon 'check-circle' size='1.5em' %}{% else %}{% bs_icon 'x-circle' size='1.5em' %}{% endif %}</td>
-                <td class="my-auto"><a class="btn btn-success my-0 py-0" href="{% url 'contentmanagment:addNews' news.id %}">Редактировать</a></td>
             </tr>
         {% endfor %}
         </tbody>
