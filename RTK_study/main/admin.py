@@ -22,3 +22,4 @@ class ContactAdmin(admin.ModelAdmin):
 admin.site.register(TagsModel, TagsAdmin)
 admin.site.register(NewsModel, NewsAdmin)
 admin.site.register(ContactModel, ContactAdmin)
+admin.site.register(ImagesModel)

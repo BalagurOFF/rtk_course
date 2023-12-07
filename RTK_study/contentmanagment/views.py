@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 
 from .forms import AddNewsForm, TagsForm
-from main.models import NewsModel, TagsModel
+from main.models import NewsModel, TagsModel, ImagesModel
 
 
 def addnews(request, news_id=None):
@@ -24,8 +24,12 @@ def addnews(request, news_id=None):
                 news_entry.autor = request.user
                 news_entry.save()
                 form.save_m2m()
+                for img in request.FILES.getlist('image_field'):
+                    ImagesModel.objects.create(news=news_entry, image=img, description=img.name)
             else:
-                form.save()
+                news_entry = form.save()
+                for img in request.FILES.getlist('image_field'):
+                    ImagesModel.objects.create(news=news_entry, image=img, description=img.name)
         url_referer = request.session['url_referer']
         return HttpResponseRedirect(url_referer)
     request.session['url_referer'] = request.META.get('HTTP_REFERER')

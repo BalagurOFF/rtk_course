@@ -59,3 +59,15 @@ class ContactModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('main:messagedetail', kwargs={"pk": self.pk})
+
+
+class ImagesModel(models.Model):
+    news = models.ForeignKey(NewsModel, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='news/%Y%m%d/', max_length=200)
+    description = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'Медиа-материалы'
+
+    def __str__(self):
+        return self.description
