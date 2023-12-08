@@ -22,7 +22,6 @@ class NewsModel(models.Model):
     tags = models.ManyToManyField('TagsModel',blank=True, related_name='Тэги')
     autor = models.ForeignKey(User, on_delete=models.PROTECT)
     name = models.CharField(max_length=150, blank=True)
-    mainImage = models.ImageField(upload_to='news/%Y%m%d-%H%M/', max_length=200)
     description = models.TextField(blank=True)
     date_pub = models.DateTimeField(auto_now=True)
     show_news = models.BooleanField(default=True)

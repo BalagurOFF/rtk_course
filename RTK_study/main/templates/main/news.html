@@ -14,7 +14,7 @@
         {% for news in newslist.object_list %}
         <div class="col">
             <div class="card h-100">
-                <img src="{{ news.mainImage.url }}" class="card-img-top" alt="{{ news.mainImage }}" width="250px">
+                <img src="{{ news.imagesmodel_set.first.image.url }}" class="card-img-top" alt="{{ news.imagesmodel_set.first.description }}" width="250px">
                 <div class="card-body ">
                     <h6 class="card-text">{{ news.name|truncatewords:10 }}</h6>
                 </div>

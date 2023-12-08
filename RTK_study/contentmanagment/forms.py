@@ -26,11 +26,10 @@ class AddNewsForm(forms.ModelForm):
 
     class Meta:
         model = NewsModel
-        fields = ['name', 'mainImage', 'description', 'tags', 'show_news']
+        fields = ['name', 'description', 'tags', 'show_news']
 
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'mainImage': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
             'tags': Select2MultipleWidget(),
             'show_news': forms.CheckboxInput()
@@ -38,11 +37,11 @@ class AddNewsForm(forms.ModelForm):
 
         labels = {
             'name': 'Название',
-            'mainImage': 'Основное изображение',
             'description': 'Текст новости',
             'tags': 'Тэги новостей',
             'show_news': 'Отображать новость'
         }
+    field_order = ['name', 'image_field', 'description', 'tags', 'show_news']
 
 
 class TagsForm(forms.ModelForm):
