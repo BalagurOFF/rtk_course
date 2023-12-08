@@ -21,27 +21,29 @@
             <h1 class="text-center">
                 {{ news.name }}
             </h1>
-            <h6 class="text-end text-secondary">
+            <h6 class="text-end text-secondary py-3">
                 Опубликовано: {{ news.date_pub }}, автор {{ news.autor.last_name }} {{ news.autor.first_name }}
             </h6>
             <!-- Carousel -->
-            <div id="carouselExampleControls" class="carousel carousel-dark slide col-10 col-md-8 mx-auto py-3" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    {% for image in news.imagesmodel_set.all %}
-                        <div class="carousel-item {% if forloop.counter == 1 %}active{% endif %}">
-                            <img src="{{ image.image.url }}" class="d-block mx-auto rounded-2" style="height: 400px; width: auto;" alt="{{ image.description }}">
-                        </div>
-                    {% endfor %}
+            {% if news.imagesmodel_set.all %}
+                <div id="carouselExampleControls" class="carousel carousel-dark slide col-10 col-md-8 mx-auto pb-3" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for image in news.imagesmodel_set.all %}
+                            <div class="carousel-item {% if forloop.counter == 1 %}active{% endif %}">
+                                <img src="{{ image.image.url }}" class="d-block mx-auto rounded-2" style="height: 400px; width: auto;" alt="{{ image.description }}">
+                            </div>
+                        {% endfor %}
+                    </div>
+                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                 </button>
+                 <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                        <span class="carousel-control-next-icon text-secondary" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                    <span class="carousel-control-next-icon text-secondary" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-            </div>
+            {% endif %}
             <!-- end -->
             {% for paragraph in news.description %}
                 <p class="py-1 my-1" style="text-indent: 20px;">
