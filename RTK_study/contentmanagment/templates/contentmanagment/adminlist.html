@@ -6,6 +6,36 @@
 
 {% block content %}
     <h3 class="text-center py-3">Публикации:</h3>
+
+    <div class="container col-12 col-md-10 py-0">
+        <div class="col-12 mb-2 text-end">
+            <button class="btn btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseExample">
+                {% bs_icon 'funnel-fill' size='1em' %}
+            </button>
+        </div>
+        <div class="collapse" id="collapseFilter">
+            <form method="POST" class="pb-3 row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2 mx-auto">
+                {% csrf_token %}
+                <div>
+                    <select class="form-select fs-6" name="autor">
+                        <option value="0" {% if autor_id == 0 %}selected{% endif %} class="fs-6">Выберите автора новостей</option>
+                        {% for autor in autors %}
+                            <option value="{{ autor.id }}" {% if autor.id == autor_id %}selected{% endif %}>{{ autor.last_name }} {{ autor.first_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <input type="date" class="form-control fs-6" placeholder="Дата начала" name="date_start" value="{{ date_start }}">
+                </div>
+                <div>
+                    <input type="date" class="form-control fs-6" placeholder="Дата окончания" name="date_end" value="{{ date_end }}">
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-success col-12">Найти</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="container col-12 col-md-10">
     <table class="table table-striped">
         <thead>
@@ -22,7 +52,7 @@
                 <th scope="row" class="my-auto">{{ forloop.counter }}</th>
                 <td class="my-auto align-items-center"><a class="link-dark text-decoration-none stretched-link" href="{% url 'contentmanagment:addNews' news.id %}">{{ news.name|truncatewords:8 }}</a></td>
                 <td class="my-auto align-items-center">{{ news.autor.last_name }} {{ news.autor.first_name|slice:":1" }}.</td>
-                <td class="my-auto align-items-center">{% if news.show_news %}{% bs_icon 'check-circle' size='1.5em' %}{% else %}{% bs_icon 'x-circle' size='1.5em' %}{% endif %}</td>
+                <td class="my-auto align-items-center">{% if news.show_news == True %}{% bs_icon 'check-circle' size='1.5em' %}{% else %}{% bs_icon 'x-circle' size='1.5em' %}{% endif %}</td>
             </tr>
         {% endfor %}
         </tbody>

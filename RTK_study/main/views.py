@@ -59,7 +59,7 @@ def news(request):
         context = {'newslist': newslist}
     else:
         paginator = Paginator(NewsModel.objects.filter(show_news = True).annotate(comments=Count('newscommentsmodel', distinct=True),
-                                                         newsautor = Concat(F('autor__last_name'), F('autor__first_name'), output_field=CharField())).order_by('-date_pub')[:600], 12)
+                                                         newsautor = Concat(F('autor__last_name'), Value(' '), F('autor__first_name'), output_field=CharField())).order_by('-date_pub')[:600], 12)
         page_number = request.GET.get('page')
         newslist = paginator.get_page(page_number)
         context = {'newslist': newslist}

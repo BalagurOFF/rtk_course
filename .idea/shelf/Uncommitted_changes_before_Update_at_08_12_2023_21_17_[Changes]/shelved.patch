@@ -1,0 +1,169 @@
+Index: RTK_study/main/models.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from django.contrib.auth import get_user_model\r\nfrom django.db import models\r\nfrom django.urls import reverse\r\nfrom django.utils.translation import gettext as _\r\n\r\n\r\nUser = get_user_model()\r\nclass TagsModel(models.Model):\r\n    description = models.CharField(max_length=100, blank=True)\r\n\r\n    class Meta:\r\n        verbose_name_plural = 'Тэги новостей'\r\n\r\n    def __str__(self):\r\n        return self.description\r\n\r\n    def get_absolute_url(self):\r\n        return reverse('contentmanagment:tags', kwargs={'id': self.id})\r\n\r\n\r\nclass NewsModel(models.Model):\r\n    tags = models.ManyToManyField('TagsModel',blank=True, related_name='Тэги')\r\n    autor = models.ForeignKey(User, on_delete=models.PROTECT)\r\n    name = models.CharField(max_length=150, blank=True)\r\n    mainImage = models.ImageField(upload_to='news/%Y%m%d-%H%M/', max_length=200)\r\n    description = models.TextField(blank=True)\r\n    date_pub = models.DateTimeField(auto_now=True)\r\n    show_news = models.BooleanField(default=True)\r\n\r\n    class Meta:\r\n        verbose_name_plural = 'Новости'\r\n\r\n    def __str__(self):\r\n        return self.name\r\n\r\n    def get_absolute_url(self):\r\n        return reverse('main:newsFull', kwargs={'id': self.id})\r\n\r\n\r\nclass NewsCommentsModel(models.Model):\r\n    date_comment = models.DateTimeField(auto_now=True)\r\n    user = models.ForeignKey(User, on_delete=models.PROTECT)\r\n    news = models.ForeignKey(NewsModel, on_delete=models.CASCADE)\r\n    text = models.TextField(max_length=10000, blank=True)\r\n    show_comment = models.BooleanField(default=True)\r\n\r\n\r\nclass ContactModel(models.Model):\r\n    date_message = models.DateTimeField(auto_now=True)\r\n    sender = models.TextField(max_length=100, blank=False)\r\n    contact = models.TextField(max_length=100, blank=False)\r\n    message = models.TextField(max_length=10000, blank=False)\r\n\r\n    class Meta:\r\n        verbose_name_plural = 'Сообщения для администрации'\r\n\r\n    def __str__(self):\r\n        return self.contact\r\n\r\n    def get_absolute_url(self):\r\n        return reverse('main:messagedetail', kwargs={\"pk\": self.pk})\r\n\r\n\r\nclass ImagesModel(models.Model):\r\n    news = models.ForeignKey(NewsModel, on_delete=models.CASCADE)\r\n    image = models.ImageField(upload_to='news/%Y%m%d/', max_length=200)\r\n    description = models.CharField(max_length=200, blank=True)\r\n\r\n    class Meta:\r\n        verbose_name_plural = 'Медиа-материалы'\r\n\r\n    def __str__(self):\r\n        return self.description\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RTK_study/main/models.py b/RTK_study/main/models.py
+--- a/RTK_study/main/models.py	(revision 801b3213db13923b630d5bdc7dc76136bb765fae)
++++ b/RTK_study/main/models.py	(date 1702037831123)
+@@ -22,7 +22,6 @@
+     tags = models.ManyToManyField('TagsModel',blank=True, related_name='Тэги')
+     autor = models.ForeignKey(User, on_delete=models.PROTECT)
+     name = models.CharField(max_length=150, blank=True)
+-    mainImage = models.ImageField(upload_to='news/%Y%m%d-%H%M/', max_length=200)
+     description = models.TextField(blank=True)
+     date_pub = models.DateTimeField(auto_now=True)
+     show_news = models.BooleanField(default=True)
+Index: RTK_study/contentmanagment/forms.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from django import forms\r\nfrom main.models import NewsModel, TagsModel\r\nfrom django_select2.forms import Select2MultipleWidget, Select2Widget\r\n\r\n\r\nclass MultipleFileInput(forms.ClearableFileInput):\r\n    allow_multiple_selected = True\r\n\r\n\r\nclass MultipleFileField(forms.FileField):\r\n    def __init__(self, *args, **kwargs):\r\n        kwargs.setdefault(\"widget\", MultipleFileInput())\r\n        super().__init__(*args, **kwargs)\r\n\r\n    def clean(self, data, initial=None):\r\n        single_file_clean = super().clean\r\n        if isinstance(data, (list, tuple)):\r\n            result = [single_file_clean(d, initial) for d in data]\r\n        else:\r\n            result = single_file_clean(data, initial)\r\n        return result\r\n\r\n\r\nclass AddNewsForm(forms.ModelForm):\r\n    image_field = MultipleFileField(label = 'Медиа-материалы')\r\n\r\n    class Meta:\r\n        model = NewsModel\r\n        fields = ['name', 'mainImage', 'description', 'tags', 'show_news']\r\n\r\n        widgets = {\r\n            'name': forms.TextInput(attrs={'class': 'form-control'}),\r\n            'mainImage': forms.ClearableFileInput(attrs={'class': 'form-control'}),\r\n            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),\r\n            'tags': Select2MultipleWidget(),\r\n            'show_news': forms.CheckboxInput()\r\n        }\r\n\r\n        labels = {\r\n            'name': 'Название',\r\n            'mainImage': 'Основное изображение',\r\n            'description': 'Текст новости',\r\n            'tags': 'Тэги новостей',\r\n            'show_news': 'Отображать новость'\r\n        }\r\n\r\n\r\nclass TagsForm(forms.ModelForm):\r\n    class Meta:\r\n        model = TagsModel\r\n        fields = ['description']\r\n        widgets = {\r\n            'description': forms.TextInput(attrs={'class': 'form-control'}),\r\n        }\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RTK_study/contentmanagment/forms.py b/RTK_study/contentmanagment/forms.py
+--- a/RTK_study/contentmanagment/forms.py	(revision 801b3213db13923b630d5bdc7dc76136bb765fae)
++++ b/RTK_study/contentmanagment/forms.py	(date 1702037831021)
+@@ -26,11 +26,10 @@
+ 
+     class Meta:
+         model = NewsModel
+-        fields = ['name', 'mainImage', 'description', 'tags', 'show_news']
++        fields = ['name', 'description', 'tags', 'show_news']
+ 
+         widgets = {
+             'name': forms.TextInput(attrs={'class': 'form-control'}),
+-            'mainImage': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
+             'tags': Select2MultipleWidget(),
+             'show_news': forms.CheckboxInput()
+@@ -38,11 +37,11 @@
+ 
+         labels = {
+             'name': 'Название',
+-            'mainImage': 'Основное изображение',
+             'description': 'Текст новости',
+             'tags': 'Тэги новостей',
+             'show_news': 'Отображать новость'
+         }
++    field_order = ['name', 'image_field', 'description', 'tags', 'show_news']
+ 
+ 
+ class TagsForm(forms.ModelForm):
+Index: readme.md
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># Здравствуйте! Меня зовут Александр.\r\n### Этот репозиторий создан для учебного проекта на Django\r\n\r\n### Заведен тестовый пользователь с данными для авторизации user/user_123\r\n\r\n#### Список задач, которые нужно решить в этом проекте:\r\n\r\n- [x] Создание общих шаблонов\r\n  - [x] шабон страницы 404\r\n  - [x] Шаблон страницы AccessDenied\r\n  - [x] Базовый шаблон\r\n  - [x] Шаблон футера\r\n  - [x] Шаблон верхнего меню\r\n  - [x] Шаблон страницы для рендерингра пагинатора\r\n  - [x] Шаблон бокового меню\r\n- [x] Создание приложения User\r\n  - [x] Создание моделей\r\n    - [x] Создание кастомной модели User\r\n  - [x] Создание форм приложения\r\n    - [x] Форма авторизации\r\n    - [x] 2 формы регистрации пользователя\r\n    - [x] 2 формы редактирования профиля \r\n    - [x] Форма создания и редактирования групп доступа\r\n  - [x] Создание представлений приложения с шаблонами\r\n    - [x] Представление авторизации\r\n    - [x] Представление регистрации\r\n    - [x] Представление редактирования профиля\r\n    - [x] Представление выхода пользователя\r\n    - [x] Представление смены пароля пользователя\r\n    - [x] Представление списка пользователей\r\n    - [x] Представление удаления пользователя\r\n    - [x] Представление списка групп доступа\r\n    - [x] Представление добавления группы доступа\r\n    - [x] Представление удаления группы доступа\r\n  - [x] Настройка прав доступа к представлениям\r\n  - [x] Настройка URL\r\n- [ ] Создание приложения просмотра публикаций\r\n  - [x] Создание моделей\r\n    - [x] Создание модели Публикации\r\n    - [x] Создание модели Тэги публикации\r\n    - [x] Создание модели Комментарии публикации\r\n  - [x] Создание форм приложения\r\n    - [x] Создание формы обратной связи\r\n    - [x] Создание формы добавления комментария\r\n    - [x] ~~Создание формы поиска~~ Используем html-форму sidebar\r\n  -  [ ] Создание представлений приложения с шаблонами\r\n    - [x] Создание представления О нас\r\n    - [x] Создание представления обратной связи\r\n    - [x] Создание представления списка публикации (annotate, поиск)\r\n    - [ ] Создание представления полного текста публикации с функией добавления комментариев и каруселью картинок\r\n    - [x] Создание представления страницы 404\r\n    - [ ] Создание представления модерирования комментариев\r\n  - [ ] Настройка прав доступа к представлениям\r\n  - [x] Настройка URL\r\n- [ ] Создание приложения администрирования публикаций\r\n  - [x] Создание форм приложения\r\n    - [x] Создание формы добавления и редактирования публикации\r\n    - [x] Создание формы добавления и редактирования тэгов публикации\r\n  - [x] Создание представлений приложения с шаблонами\r\n    - [x] Создание представления списка публикаций автора\r\n    - [x] Создание представления добавления и изменения публикации\r\n    - [x] Создание представления удаления публикации\r\n    - [x] Создание представления добавления и редактирования тэгов публикации\r\n    - [x] Создание представления удаления тэгов\r\n    - [x] Создание представления списка публикаций для руководства\r\n  - [ ] Настройка прав доступа к представлениям\r\n  - [x] Настройка URL\r\n- [ ] оптимизация приложений
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/readme.md b/readme.md
+--- a/readme.md	(revision 801b3213db13923b630d5bdc7dc76136bb765fae)
++++ b/readme.md	(date 1702037831137)
+@@ -43,11 +43,11 @@
+     - [x] Создание формы обратной связи
+     - [x] Создание формы добавления комментария
+     - [x] ~~Создание формы поиска~~ Используем html-форму sidebar
+-  -  [ ] Создание представлений приложения с шаблонами
++  - [ ] Создание представлений приложения с шаблонами
+     - [x] Создание представления О нас
+     - [x] Создание представления обратной связи
+     - [x] Создание представления списка публикации (annotate, поиск)
+-    - [ ] Создание представления полного текста публикации с функией добавления комментариев и каруселью картинок
++    - [x] Создание представления полного текста публикации с функией добавления комментариев и каруселью картинок
+     - [x] Создание представления страницы 404
+     - [ ] Создание представления модерирования комментариев
+   - [ ] Настройка прав доступа к представлениям
+@@ -65,4 +65,4 @@
+     - [x] Создание представления списка публикаций для руководства
+   - [ ] Настройка прав доступа к представлениям
+   - [x] Настройка URL
+-- [ ] оптимизация приложений
+\ No newline at end of file
++- [ ] оптимизация приложений
+Index: RTK_study/main/templates/main/newFull.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{% extends  'base.html' %}\r\n{% load static %}\r\n{% load bootstrap5 %}\r\n{% block title %}\r\n    Подробно о новости\r\n{% endblock title %}\r\n\r\n{% block content %}\r\n    <div class=\"row\">\r\n        <div class=\"d-none d-xl-block col-xl-3 p-3\">\r\n            <h6 class=\"text-center text-secondary\">\r\n                Последние новости:\r\n            </h6>\r\n            <ul class=\"list-group list-group-flush\">\r\n                {% for news in last_news %}\r\n                    <li class=\"list-group-item\"><a href=\"{% url 'main:newsFull' news.id %}\" class=\"text-muted stretched-link text-decoration-none\">{{news.name}}</a></li>\r\n                {% endfor %}\r\n            </ul>\r\n        </div>\r\n        <div class=\"col-10 col-xl-8 mx-auto p-3\">\r\n            <h1 class=\"text-center\">\r\n                {{ news.name }}\r\n            </h1>\r\n            <h6 class=\"text-end text-secondary\">\r\n                Опубликовано: {{ news.date_pub }}, автор {{ news.autor.last_name }} {{ news.autor.first_name }}\r\n            </h6>\r\n            <div class=\"mx-auto py-2 text-center\">\r\n                <img src=\"{{ news.mainImage.url }}\" alt=\"{{ news.mainImage }}\" class=\"col-10\">\r\n            </div>\r\n            {% for paragraph in news.description %}\r\n                <p class=\"py-1 my-1\" style=\"text-indent: 20px;\">\r\n                    {{ paragraph }}\r\n                </p>\r\n            {% endfor %}\r\n\r\n           <div>\r\n               <script>\r\n                    function sendModeration()\r\n                        {\r\n                            document.getElementById(\"moderation\").submit();\r\n                        }\r\n                </script>\r\n                {% for comment in comments %}\r\n                    <hr class=\"mt-3\">\r\n                    <p class=\"text-secondary\">{{ comment.user__last_name }} {{ comment.user__first_name }}:</p>\r\n                    <p class=\"text-start\">{{ comment.text }}</p>\r\n                    <p class=\"text-secondary text-end\">Дата: {{ comment.date_comment }}</p>\r\n                    {% if perms.newscommentsmodel.change_newscommentsmodel %}<p class=\"text-secondary text-end\">Показывать комментарий: <input class=\"form-check-input\" type=\"checkbox\" {% if comment.show_comment %}checked{% endif %} onclick=\"sendModeration()\"></p>{% endif %}\r\n                {% endfor %}\r\n           </div>\r\n           {% if perms.newscommentsmodel.add_newscommentsmodel %}\r\n           <hr class=\"mt-5\">\r\n           <form method=\"POST\" class=\"py-2\">\r\n                {% csrf_token %}\r\n                {% bootstrap_form form %}\r\n                {% bootstrap_button \"Добавить комментарий\" button_type=\"submit\" button_class=\"btn-success float-end\" %}\r\n           </form>\r\n           {% endif %}\r\n        </div>\r\n\r\n    </div>\r\n{% endblock content %}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RTK_study/main/templates/main/newFull.html b/RTK_study/main/templates/main/newFull.html
+--- a/RTK_study/main/templates/main/newFull.html	(revision 801b3213db13923b630d5bdc7dc76136bb765fae)
++++ b/RTK_study/main/templates/main/newFull.html	(date 1702037831124)
+@@ -21,12 +21,30 @@
+             <h1 class="text-center">
+                 {{ news.name }}
+             </h1>
+-            <h6 class="text-end text-secondary">
++            <h6 class="text-end text-secondary py-3">
+                 Опубликовано: {{ news.date_pub }}, автор {{ news.autor.last_name }} {{ news.autor.first_name }}
+             </h6>
+-            <div class="mx-auto py-2 text-center">
+-                <img src="{{ news.mainImage.url }}" alt="{{ news.mainImage }}" class="col-10">
+-            </div>
++            <!-- Carousel -->
++            {% if news.imagesmodel_set.all %}
++                <div id="carouselExampleControls" class="carousel carousel-dark slide col-10 col-md-8 mx-auto pb-3" data-bs-ride="carousel">
++                    <div class="carousel-inner">
++                        {% for image in news.imagesmodel_set.all %}
++                            <div class="carousel-item {% if forloop.counter == 1 %}active{% endif %}">
++                                <img src="{{ image.image.url }}" class="d-block mx-auto rounded-2" style="height: 400px; width: auto;" alt="{{ image.description }}">
++                            </div>
++                        {% endfor %}
++                    </div>
++                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
++                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
++                        <span class="visually-hidden">Previous</span>
++                 </button>
++                 <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
++                        <span class="carousel-control-next-icon text-secondary" aria-hidden="true"></span>
++                        <span class="visually-hidden">Next</span>
++                    </button>
++                </div>
++            {% endif %}
++            <!-- end -->
+             {% for paragraph in news.description %}
+                 <p class="py-1 my-1" style="text-indent: 20px;">
+                     {{ paragraph }}
+Index: RTK_study/main/templates/main/news.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{% extends  'base.html' %}\r\n{% load bootstrap5 %}\r\n{% load bootstrap_icons %}\r\n{% load static %}\r\n{% block title %}\r\n    Новости\r\n{% endblock title %}\r\n\r\n{% block content %}\r\n<div class=\"container col-12 col-md-10 py-4\">\r\n\r\n    <div class=\"row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4 g-2\">\r\n\r\n        {% for news in newslist.object_list %}\r\n        <div class=\"col\">\r\n            <div class=\"card h-100\">\r\n                <img src=\"{{ news.mainImage.url }}\" class=\"card-img-top\" alt=\"{{ news.mainImage }}\" width=\"250px\">\r\n                <div class=\"card-body \">\r\n                    <h6 class=\"card-text\">{{ news.name|truncatewords:10 }}</h6>\r\n                </div>\r\n                <div class=\"card-footer\">\r\n                    <p class=\"text-secondary\">Комментарии: {{ news.comments }}</p>\r\n                    <p class=\"text-secondary\">Автор: {{ news.newsautor }}</p>\r\n                    <a href=\"{{ news.get_absolute_url }}\" class=\"btn btn-success stretched-link float-end align-items-end\">Читать</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        {% endfor %}\r\n    </div>\r\n    <div class=\"d-flex align-items-center justify-content-center py-2\">\r\n    {% include 'render_pagination.html' with pagination=newslist %}\r\n    </div>\r\n</div>\r\n{% endblock content %}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RTK_study/main/templates/main/news.html b/RTK_study/main/templates/main/news.html
+--- a/RTK_study/main/templates/main/news.html	(revision 801b3213db13923b630d5bdc7dc76136bb765fae)
++++ b/RTK_study/main/templates/main/news.html	(date 1702037831125)
+@@ -14,7 +14,7 @@
+         {% for news in newslist.object_list %}
+         <div class="col">
+             <div class="card h-100">
+-                <img src="{{ news.mainImage.url }}" class="card-img-top" alt="{{ news.mainImage }}" width="250px">
++                <img src="{{ news.imagesmodel_set.first.image.url }}" class="card-img-top" alt="{{ news.imagesmodel_set.first.description }}" width="250px">
+                 <div class="card-body ">
+                     <h6 class="card-text">{{ news.name|truncatewords:10 }}</h6>
+                 </div>
+Index: .idea/rtk_course.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module type=\"PYTHON_MODULE\" version=\"4\">\r\n  <component name=\"NewModuleRootManager\">\r\n    <content url=\"file://$MODULE_DIR$\">\r\n      <excludeFolder url=\"file://$MODULE_DIR$/venv\" />\r\n    </content>\r\n    <orderEntry type=\"inheritedJdk\" />\r\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\r\n  </component>\r\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/rtk_course.iml b/.idea/rtk_course.iml
+--- a/.idea/rtk_course.iml	(revision 801b3213db13923b630d5bdc7dc76136bb765fae)
++++ b/.idea/rtk_course.iml	(date 1702037831010)
+@@ -4,7 +4,7 @@
+     <content url="file://$MODULE_DIR$">
+       <excludeFolder url="file://$MODULE_DIR$/venv" />
+     </content>
+-    <orderEntry type="inheritedJdk" />
++    <orderEntry type="jdk" jdkName="Python 3.11 (rtk_course)" jdkType="Python SDK" />
+     <orderEntry type="sourceFolder" forTests="false" />
+   </component>
+ </module>
+\ No newline at end of file
