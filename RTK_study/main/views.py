@@ -105,5 +105,4 @@ def moderation(request):
         else:
             status = False
         NewsCommentsModel.objects.filter(id=comment).update(show_comment=status)
-
     return HttpResponse(None)
