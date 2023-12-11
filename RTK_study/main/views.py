@@ -98,4 +98,12 @@ def handler403(request, exception):
 
 def moderation(request):
     print(request.POST)
+    if request.method == 'POST':
+        comment = request.POST['comment']
+        if request.POST['status'] == 'true':
+            status = True
+        else:
+            status = False
+        NewsCommentsModel.objects.filter(id=comment).update(show_comment=status)
+
     return HttpResponse(None)

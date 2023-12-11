@@ -51,19 +51,14 @@
                 </p>
             {% endfor %}
 
-           <div>
-               <script>
-                    function sendModeration()
-                        {
-                            document.getElementById("moderation").submit();
-                        }
-                </script>
+            <div>
+
                 {% for comment in comments %}
-                    <hr class="mt-3">
-                    <p class="text-secondary">{{ comment.user__last_name }} {{ comment.user__first_name }}:</p>
-                    <p class="text-start">{{ comment.text }}</p>
-                    <p class="text-secondary text-end">Дата: {{ comment.date_comment }}</p>
-                    {% if perms.newscommentsmodel.change_newscommentsmodel %}<p class="text-secondary text-end">Показывать комментарий: <input class="form-check-input" type="checkbox" {% if comment.show_comment %}checked{% endif %} onclick="sendModeration()"></p>{% endif %}
+                        <hr class="mt-3">
+                        <p class="text-secondary">{{ comment.user__last_name }} {{ comment.user__first_name }}:</p>
+                        <p class="text-start">{{ comment.text }}</p>
+                        <p class="text-secondary text-end">Дата: {{ comment.date_comment }}</p>
+                        {% if perms.newscommentsmodel.change_newscommentsmodel %}<p class="text-secondary text-end">Показывать комментарий: <input class="form-check-input" type="checkbox" {% if comment.show_comment %}checked{% endif %} id="checkbox_{{ comment.id }}" data-idcomment="{{ comment.id }}"></p>{% endif %}
                 {% endfor %}
            </div>
            {% if perms.newscommentsmodel.add_newscommentsmodel %}
@@ -75,6 +70,16 @@
            </form>
            {% endif %}
         </div>
-
+                <script>
+                    $(':checkbox').change(function() {
+                        var idcomment = $(this).data('idcomment');
+                        var statuscomment = this.checked;
+                        $.ajax({
+                            method: 'post',
+                            url: "{% url 'main:moderation' %}",
+                            data: { csrfmiddlewaretoken: '{{ csrf_token }}', comment: idcomment, status: statuscomment },
+                        })
+                    });
+                </script>
     </div>
 {% endblock content %}
