@@ -1,38 +1,45 @@
 import datetime
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator
 from django.db.models import F, CharField, Q
 from django.db.models.functions import Concat
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import Permission
-from .forms import AddNewsForm, TagsForm
-from main.models import NewsModel, TagsModel, ImagesModel
+from .forms import AddPublicationsForm, TagsForm
+from main.models import PublicationsModel, TagsModel, ImagesModel
 
 
 User = get_user_model()
 
 
+@permission_required(['news_editor', 'main_news_editor'], raise_exception=True)
 def addnews(request, news_id=None):
     context = {}
     if news_id:
-        instance = NewsModel.objects.get(pk=news_id)
-        form = AddNewsForm(instance=instance)
+        instance = PublicationsModel.objects.get(pk=news_id)
+        form = AddPublicationsForm(instance=instance)
     else:
         instance = None
-        form = AddNewsForm()
+        form = AddPublicationsForm()
     if request.method == 'POST':
-        form = AddNewsForm(request.POST, request.FILES, instance=instance)
+        form = AddPublicationsForm(request.POST, request.FILES, instance=instance)
         if form.is_valid():
             if id is None:
                 news_entry = form.save(commit=False)
                 news_entry.autor = request.user
+                news_entry.date_pub = datetime.datetime.now()
+                news_entry.editor = request.user
                 news_entry.save()
                 form.save_m2m()
                 for img in request.FILES.getlist('image_field'):
                     ImagesModel.objects.create(news=news_entry, image=img, description=img.name)
             else:
-                news_entry = form.save()
+                news_entry = form.save(commit=False)
+                news_entry.editor = request.user
+                news_entry.save()
+                form.save_m2m()
                 for img in request.FILES.getlist('image_field'):
                     ImagesModel.objects.create(news=news_entry, image=img, description=img.name)
         url_referer = request.session['url_referer']
@@ -43,17 +50,20 @@ def addnews(request, news_id=None):
     return render(request, 'contentmanagment/addnews.html', context)
 
 
+@permission_required(['news_editor'], raise_exception=True)
 def newschange(request):
-    newslist = NewsModel.objects.filter(autor=request.user).order_by('-date_pub')
+    newslist = PublicationsModel.objects.filter(autor=request.user).order_by('-date_pub')
     context = {'newslist': newslist}
     return render(request, 'contentmanagment/newslist.html', context)
 
 
+@permission_required(['news_editor', 'main_news_editor'], raise_exception=True)
 def removenews(request, news_id):
-    NewsModel.objects.filter(id=news_id).delete()
+    PublicationsModel.objects.filter(id=news_id).delete()
     return redirect('contentmanagment:news-list', permanent=True)
 
 
+@permission_required(['tags_editor'], raise_exception=True)
 def tags(request, id=None):
     tags_news = TagsModel.objects.all()
     if id is not None:
@@ -78,16 +88,12 @@ def tags(request, id=None):
     return render(request, 'contentmanagment/tags.html', context)
 
 
-def moderation(request):
-    print(request.POST)
-    return None
-
-
+@permission_required(['main_news_editor'], raise_exception=True)
 def administratenews(request):
     date_start = datetime.date.today() - datetime.timedelta(days=30)
     date_end = datetime.date.today()
     autor_id = 0
-    queryset = NewsModel.objects.filter(Q(date_pub__date__gte = date_start) & Q(date_pub__date__lte = date_end)).order_by('-date_pub')
+    queryset = PublicationsModel.objects.filter(Q(date_pub__date__gte = date_start) & Q(date_pub__date__lte = date_end)).order_by('-date_pub')
     if request.method == 'POST':
         if request.POST['date_start']:
             date_start = datetime.datetime.strptime(request.POST['date_start'], "%Y-%m-%d")
@@ -108,6 +114,7 @@ def administratenews(request):
     return render(request, 'contentmanagment/adminlist.html', context)
 
 
+@permission_required(['tags_editor'], raise_exception=True)
 def removetag(request, id=None):
     if id is not None:
         TagsModel.objects.filter(id=id).delete()

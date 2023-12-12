@@ -1,5 +1,5 @@
 from django import forms
-from main.models import NewsModel, TagsModel
+from main.models import PublicationsModel, TagsModel
 from django_select2.forms import Select2MultipleWidget, Select2Widget
 
 
@@ -21,27 +21,27 @@ class MultipleFileField(forms.FileField):
         return result
 
 
-class AddNewsForm(forms.ModelForm):
+class AddPublicationsForm(forms.ModelForm):
     image_field = MultipleFileField(label = 'Медиа-материалы')
 
     class Meta:
-        model = NewsModel
-        fields = ['name', 'description', 'tags', 'show_news']
+        model = PublicationsModel
+        fields = ['title', 'text', 'tags', 'show_news']
 
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'text': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
             'tags': Select2MultipleWidget(),
             'show_news': forms.CheckboxInput()
         }
 
         labels = {
-            'name': 'Название',
-            'description': 'Текст новости',
+            'title': 'Название',
+            'text': 'Текст новости',
             'tags': 'Тэги новостей',
             'show_news': 'Отображать новость'
         }
-    field_order = ['name', 'image_field', 'description', 'tags', 'show_news']
+    field_order = ['title', 'image_field', 'text', 'tags', 'show_news']
 
 
 class TagsForm(forms.ModelForm):

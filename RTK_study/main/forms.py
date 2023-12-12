@@ -1,11 +1,11 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm, PasswordChangeForm
-from .models import NewsCommentsModel, ContactModel
+from .models import PublicationsCommentsModel, ContactModel
 
 
 class AddCommentForm(forms.ModelForm):
     class Meta:
-        model = NewsCommentsModel
+        model = PublicationsCommentsModel
         fields = ['text']
 
         widgets = {

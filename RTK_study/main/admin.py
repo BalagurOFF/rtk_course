@@ -8,11 +8,11 @@ class TagsAdmin(admin.ModelAdmin):
     search_fields = ['description']
 
 
-class NewsAdmin(admin.ModelAdmin):
-    list_display = ['name', 'autor', 'date_pub', 'show_news']
-    list_filter = ['name', 'autor', 'date_pub', 'show_news']
+class PublicationsAdmin(admin.ModelAdmin):
+    list_display = ['title', 'autor', 'date_pub', 'show_news']
+    list_filter = ['title', 'autor', 'date_pub', 'show_news']
     autocomplete_fields = ['tags']
-    search_fields = ['name', 'autor__username', 'autor__last_name']
+    search_fields = ['title', 'autor__username', 'autor__last_name']
 
 
 class ContactAdmin(admin.ModelAdmin):
@@ -20,6 +20,6 @@ class ContactAdmin(admin.ModelAdmin):
 
 
 admin.site.register(TagsModel, TagsAdmin)
-admin.site.register(NewsModel, NewsAdmin)
+admin.site.register(PublicationsModel, PublicationsAdmin)
 admin.site.register(ContactModel, ContactAdmin)
 admin.site.register(ImagesModel)

@@ -54,12 +54,12 @@
             <div>
 
                 {% for comment in comments %}
-                    {% if comment.show_comment or perms.main.change_newscommentsmodel %}
+                    {% if comment.show_comment or perms.main.moderation %}
                         <hr class="mt-3">
                         <p class="text-secondary">{{ comment.user__last_name }} {{ comment.user__first_name }}:</p>
                         <p class="text-start">{{ comment.text }}</p>
                         <p class="text-secondary text-end">Дата: {{ comment.date_comment }}</p>
-                        {% if perms.main.change_newscommentsmodel %}<p class="text-secondary text-end">Показывать комментарий: <input class="form-check-input" type="checkbox" {% if comment.show_comment %}checked{% endif %} id="checkbox_{{ comment.id }}" data-idcomment="{{ comment.id }}"></p>{% endif %}
+                        {% if perms.main.moderation %}<p class="text-secondary text-end">Показывать комментарий: <input class="form-check-input" type="checkbox" {% if comment.show_comment %}checked{% endif %} id="checkbox_{{ comment.id }}" data-idcomment="{{ comment.id }}"></p>{% endif %}
                     {% endif %}
                 {% endfor %}
            </div>

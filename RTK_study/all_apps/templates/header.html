@@ -11,29 +11,35 @@
                     {{ user.last_name }} {{ user.first_name }}
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" style="background-color: #C5E1D4;" aria-labelledby="bd-versions">
-                    <li>
-                        <a class="dropdown-item" href="{% url 'contentmanagment:news-list' %}">Мои публикации</a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="{% url 'contentmanagment:addNews' %}">Добавить новость</a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="{% url 'contentmanagment:tags' %}">Тэги новостей</a>
-                    </li>
-                    {% if perms.newsmodel.change_newsmodel %}
+                    {% if perms.main.publications_editor %}
+                        <li>
+                            <a class="dropdown-item" href="{% url 'contentmanagment:news-list' %}">Мои публикации</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'contentmanagment:addNews' %}">Добавить новость</a>
+                        </li>
+                    {% endif %}
+                    {% if perms.main.tags_editor %}
+                        <li>
+                            <a class="dropdown-item" href="{% url 'contentmanagment:tags' %}">Тэги новостей</a>
+                        </li>
+                    {% endif %}
+                    {% if perms.main.main_news_editor %}
                         <li>
                             <a class="dropdown-item" href="{% url 'contentmanagment:admin-newslist' %}">Публикации пользователей</a>
                         </li>
                     {% endif %}
-                    {% if perms.contactmodel.view_contactmodel %}
+                    {% if perms.main.view_messages %}
                         <li>
                             <a class="dropdown-item" href="{% url 'main:messages' %}">Сообщения пользователей</a>
                         </li>
                     {% endif %}
-                    <li>
-                        <a class="dropdown-item" href="{% url 'users:profile' %}">Личный кабинет</a>
-                    </li>
-                    {% if perms.user.change_user %}
+                    {% if perms.users.edit_profile %}
+                        <li>
+                            <a class="dropdown-item" href="{% url 'users:profile' %}">Личный кабинет</a>
+                        </li>
+                    {% endif %}
+                    {% if perms.users.user_administration %}
                         <li>
                             <a class="dropdown-item" href="{% url 'users:listusers' %}">Пользователи</a>
                         </li>
