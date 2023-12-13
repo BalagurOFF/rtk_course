@@ -14,11 +14,11 @@ from main.models import PublicationsModel, TagsModel, ImagesModel
 User = get_user_model()
 
 
-@permission_required(['main.news_editor', 'main.main_news_editor'], raise_exception=True)
-def addnews(request, news_id=None):
+@permission_required(['main.publications_editor'], raise_exception=True)
+def addnews(request, id=None):
     context = {}
-    if news_id:
-        instance = PublicationsModel.objects.get(pk=news_id)
+    if id:
+        instance = PublicationsModel.objects.get(pk=id)
         form = AddPublicationsForm(instance=instance)
     else:
         instance = None
@@ -27,6 +27,7 @@ def addnews(request, news_id=None):
         form = AddPublicationsForm(request.POST, request.FILES, instance=instance)
         if form.is_valid():
             if id is None:
+                print('!!!!!!!!!!!!!!!!!!!!!!', datetime.datetime.now())
                 news_entry = form.save(commit=False)
                 news_entry.autor = request.user
                 news_entry.date_pub = datetime.datetime.now()
@@ -50,14 +51,14 @@ def addnews(request, news_id=None):
     return render(request, 'contentmanagment/addnews.html', context)
 
 
-@permission_required(['main.news_editor'], raise_exception=True)
+@permission_required(['main.publications_editor'], raise_exception=True)
 def newschange(request):
     newslist = PublicationsModel.objects.filter(autor=request.user).order_by('-date_pub')
     context = {'newslist': newslist}
     return render(request, 'contentmanagment/newslist.html', context)
 
 
-@permission_required(['main.news_editor', 'main.main_news_editor'], raise_exception=True)
+@permission_required(['main.publications_editor', 'main.main_publications_editor'], raise_exception=True)
 def removenews(request, news_id):
     PublicationsModel.objects.filter(id=news_id).delete()
     return redirect('contentmanagment:news-list', permanent=True)
@@ -88,7 +89,7 @@ def tags(request, id=None):
     return render(request, 'contentmanagment/tags.html', context)
 
 
-@permission_required(['main.main_news_editor'], raise_exception=True)
+@permission_required(['main.main_publications_editor'], raise_exception=True)
 def administratenews(request):
     date_start = datetime.date.today() - datetime.timedelta(days=30)
     date_end = datetime.date.today()
@@ -108,7 +109,7 @@ def administratenews(request):
     paginator = Paginator(queryset.distinct(), 20)
     page_number = request.GET.get('page')
     newslist = paginator.get_page(page_number)
-    perm = Permission.objects.get(codename='news_editor')
+    perm = Permission.objects.get(codename='publications_editor')
     autors = User.objects.filter(Q(groups__permissions=perm) | Q(user_permissions=perm)).distinct()
     context = {'newslist': newslist, 'autors': autors, 'date_start': date_start.strftime('%Y-%m-%d'), 'date_end': date_end.strftime('%Y-%m-%d'), 'autor_id': autor_id}
     return render(request, 'contentmanagment/adminlist.html', context)

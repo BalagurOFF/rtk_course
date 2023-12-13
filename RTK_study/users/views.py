@@ -13,6 +13,7 @@ User = get_user_model()
 
 def registration(request):
     if request.method == 'POST':
+        print(request.POST)
         if request.user.is_authenticated:
             if request.user.has_perm('user.user_administration'):
                 form = AdminRegistrationForm(request.POST)
@@ -26,17 +27,15 @@ def registration(request):
             password2 = form.cleaned_data.get('password2')
             if password1 == password2:
                 user = form.save()
+                form.save_m2m()
                 if request.user.is_authenticated and request.user.has_perm('user.user_administration'):
                     return redirect('users:listusers', permanent=True)
                 else:
                     login(request, user)
                     return redirect('users:profile', permanent=True)
     else:
-        if request.user.is_authenticated:
-            if request.user.has_perm('user.user_administration'):
-                form = AdminRegistrationForm()
-            else:
-                return render(request, '403.html')
+        if request.user.is_authenticated and request.user.has_perm('user.user_administration'):
+            form = AdminRegistrationForm()
         else:
             form = RegistrationForm()
     return render(request, 'users/registration.html', {'form': form})

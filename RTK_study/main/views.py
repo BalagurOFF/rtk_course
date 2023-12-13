@@ -74,8 +74,8 @@ def news(request):
 def new_full(request, id):
     news_full = PublicationsModel.objects.select_related('autor').get(pk=id)
     comments = news_full.publicationscommentsmodel_set.select_related('user').values('date_comment', 'text', 'user__first_name', 'user__last_name', 'show_comment')
-    news_full.description = news_full.description.split('\r\n')
-    last_news = PublicationsModel.objects.order_by('-date_pub').all().values('id', 'name')
+    news_full.text = news_full.text.split('\r\n')
+    last_news = PublicationsModel.objects.order_by('-date_pub').all().values('id', 'title')
     form = AddCommentForm()
     if request.method == 'POST':
         form = AddCommentForm(request.POST)

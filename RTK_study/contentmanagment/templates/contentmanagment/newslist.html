@@ -1,5 +1,5 @@
 {% extends  'base.html' %}
-
+{% load bootstrap_icons %}
 {% block title %}
     Публикации
 {% endblock title %}
@@ -19,8 +19,8 @@
         {% for news in newslist %}
             <tr class="my-auto align-items-center">
                 <th scope="row" class="my-auto">{{ forloop.counter }}</th>
-                <td class="my-auto align-items-center">{{ news.name }}</td>
-                <td class="my-auto"><a class="btn btn-success my-0 py-0" href="{% url 'contentmanagment:addNews' news.id %}">Редактировать</a></td>
+                <td class="my-auto align-items-center">{{ news.title }}</td>
+                <td class="my-auto text-end"><a class="btn btn-success my-0 py-1" href="{% url 'contentmanagment:addNews' news.id %}">{% bs_icon 'pencil-fill' size='1.3em' %} </a></td>
             </tr>
         {% endfor %}
         </tbody>

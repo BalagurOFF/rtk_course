@@ -28,7 +28,7 @@ class PublicationsModel(models.Model):
     autor = models.ForeignKey(User, on_delete=models.PROTECT, related_name='autor')
     title = models.CharField(max_length=150, blank=True)
     text = models.TextField(blank=True)
-    date_pub = models.DateTimeField()
+    date_pub = models.DateTimeField(null=True)
     show_news = models.BooleanField(default=True)
     editor = models.ForeignKey(User, on_delete=models.PROTECT, related_name='editor')
     date_edit = models.DateTimeField(auto_now=True)

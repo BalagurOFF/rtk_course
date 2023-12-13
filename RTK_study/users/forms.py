@@ -20,7 +20,7 @@ class AdminRegistrationForm(UserCreationForm):
 
     class Meta:
         model = get_user_model()
-        fields = ['username', 'password1', 'password2', 'last_name', 'email', 'groups']
+        fields = ['username', 'password1', 'password2', 'first_name', 'last_name', 'email', 'groups']
         labels = {
             'username': 'Логин',
             'password1': 'Пароль',
