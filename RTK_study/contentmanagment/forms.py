@@ -1,6 +1,7 @@
 from django import forms
-from main.models import PublicationsModel, TagsModel
+from main.models import PublicationsModel, TagsModel, ImagesModel
 from django_select2.forms import Select2MultipleWidget, Select2Widget
+from django.forms.models import inlineformset_factory
 
 
 class MultipleFileInput(forms.ClearableFileInput):

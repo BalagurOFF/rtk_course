@@ -16,7 +16,7 @@
             <div class="card h-100">
                 <img src="{{ news.imagesmodel_set.first.image.url }}" class="card-img-top" alt="{{ news.imagesmodel_set.first.description }}" width="250px">
                 <div class="card-body ">
-                    <h6 class="card-text">{{ news.name|truncatewords:10 }}</h6>
+                    <h6 class="card-text">{{ news.title|truncatewords:10 }}</h6>
                 </div>
                 <div class="card-footer">
                     <p class="text-secondary">Комментарии: {{ news.comments }}</p>

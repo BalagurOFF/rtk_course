@@ -17,6 +17,7 @@
     <form class="form col-10 col-lg-8 mx-auto py-2" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {% bootstrap_form form %}
+
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             {% if news.id %}
                 <button type="button" class="btn btn-success me-md-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
