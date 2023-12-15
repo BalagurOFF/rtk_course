@@ -7,7 +7,7 @@ from django.db.models.functions import Concat
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import Permission
-from .forms import AddPublicationsForm, TagsForm
+from .forms import AddPublicationsForm, TagsForm, AddImageFormset
 from main.models import PublicationsModel, TagsModel, ImagesModel
 
 
@@ -15,41 +15,66 @@ User = get_user_model()
 
 
 @permission_required(['main.publications_editor'], raise_exception=True)
-def addnews(request, id=None):
-    context = {}
+def creantepublication(request, id=None):
+    template_name = 'contentmanagment/addnews.html'
+    order_instance = PublicationsModel()
     if id:
-        instance = PublicationsModel.objects.get(pk=id)
-        form = AddPublicationsForm(instance=instance)
-    else:
-        instance = None
-        form = AddPublicationsForm()
+        order_instance = PublicationsModel.objects.get(pk=id)
+    form = AddPublicationsForm(request.POST or None, instance=order_instance, prefix='main')
+    formset = AddImageFormset(request.POST or None, request.FILES or None, instance=order_instance, prefix='images')
     if request.method == 'POST':
-        form = AddPublicationsForm(request.POST, request.FILES, instance=instance)
-        if form.is_valid():
-            if id is None:
-                print('!!!!!!!!!!!!!!!!!!!!!!', datetime.datetime.now())
-                news_entry = form.save(commit=False)
-                news_entry.autor = request.user
-                news_entry.date_pub = datetime.datetime.now()
-                news_entry.editor = request.user
-                news_entry.save()
-                form.save_m2m()
-                for img in request.FILES.getlist('image_field'):
-                    ImagesModel.objects.create(news=news_entry, image=img, description=img.name)
-            else:
-                news_entry = form.save(commit=False)
-                news_entry.editor = request.user
-                news_entry.save()
-                form.save_m2m()
-                for img in request.FILES.getlist('image_field'):
-                    ImagesModel.objects.create(news=news_entry, image=img, description=img.name)
-        url_referer = request.session['url_referer']
-        return HttpResponseRedirect(url_referer)
+        if form.is_valid() and formset.is_valid():
+            news_entry = form.save(commit=False)
+            news_entry.autor = request.user
+            news_entry.date_pub = datetime.datetime.now()
+            news_entry.editor = request.user
+            news_entry.save()
+            form.save_m2m()
+            formset.save()
+            url_referer = request.session['url_referer']
+            return HttpResponseRedirect(url_referer)
     request.session['url_referer'] = request.META.get('HTTP_REFERER')
-    context['form'] = form
-    context['news'] = instance
-    return render(request, 'contentmanagment/addnews.html', context)
+    context = {'form': form, 'formset': formset}
+    return render(request, template_name, context)
 
+
+
+#@permission_required(['main.publications_editor'], raise_exception=True)
+#def addnews(request, id=None):
+#    context = {}
+#    if id:
+#        instance = PublicationsModel.objects.get(pk=id)
+#        form = AddPublicationsForm(instance=instance)
+#    else:
+#        instance = None
+#        form = AddPublicationsForm()
+#    if request.method == 'POST':
+#        form = AddPublicationsForm(request.POST, request.FILES, instance=instance)
+#        if form.is_valid():
+#            if id is None:
+#                print('!!!!!!!!!!!!!!!!!!!!!!', datetime.datetime.now())
+#                news_entry = form.save(commit=False)
+#                news_entry.autor = request.user
+#                news_entry.date_pub = datetime.datetime.now()
+#                news_entry.editor = request.user
+#                news_entry.save()
+#                form.save_m2m()
+#                for img in request.FILES.getlist('image_field'):
+#                    ImagesModel.objects.create(news=news_entry, image=img, description=img.name)
+#            else:
+#                news_entry = form.save(commit=False)
+#                news_entry.editor = request.user
+#                news_entry.save()
+#                form.save_m2m()
+#                for img in request.FILES.getlist('image_field'):
+#                    ImagesModel.objects.create(news=news_entry, image=img, description=img.name)
+#        url_referer = request.session['url_referer']
+#        return HttpResponseRedirect(url_referer)
+#    request.session['url_referer'] = request.META.get('HTTP_REFERER')
+#    context['form'] = form
+#    context['news'] = instance
+#    return render(request, 'contentmanagment/addnews.html', context)
+#
 
 @permission_required(['main.publications_editor'], raise_exception=True)
 def newschange(request):
