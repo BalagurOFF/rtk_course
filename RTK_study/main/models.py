@@ -25,12 +25,12 @@ class TagsModel(models.Model):
 
 class PublicationsModel(models.Model):
     tags = models.ManyToManyField('TagsModel', blank=True, related_name='Тэги')
-    autor = models.ForeignKey(User, on_delete=models.PROTECT, related_name='autor', null=True)
+    autor = models.ForeignKey(User, on_delete=models.PROTECT, related_name='autor')
     title = models.CharField(max_length=150, blank=True)
     text = models.TextField(blank=True)
     date_pub = models.DateTimeField(null=True)
     show_news = models.BooleanField(default=True)
-    editor = models.ForeignKey(User, on_delete=models.PROTECT, related_name='editor', null=True)
+    editor = models.ForeignKey(User, on_delete=models.PROTECT, related_name='editor')
     date_edit = models.DateTimeField(auto_now=True)
 
     class Meta:
