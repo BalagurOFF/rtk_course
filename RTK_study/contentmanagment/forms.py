@@ -52,3 +52,16 @@ class TagsForm(forms.ModelForm):
         widgets = {
             'description': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+
+class ImageForm(forms.ModelForm):
+    class Meta:
+        model = ImagesModel
+        fields = ['image', 'description']
+        labels = {
+            'image': 'Изображение',
+            'description': 'Описание',
+        }
+
+
+AddImageFormset = inlineformset_factory(PublicationsModel, ImagesModel, form=ImageForm, fields=['image', 'description'], extra=1)
