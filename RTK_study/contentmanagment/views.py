@@ -38,44 +38,6 @@ def creantepublication(request, id=None):
     return render(request, template_name, context)
 
 
-
-#@permission_required(['main.publications_editor'], raise_exception=True)
-#def addnews(request, id=None):
-#    context = {}
-#    if id:
-#        instance = PublicationsModel.objects.get(pk=id)
-#        form = AddPublicationsForm(instance=instance)
-#    else:
-#        instance = None
-#        form = AddPublicationsForm()
-#    if request.method == 'POST':
-#        form = AddPublicationsForm(request.POST, request.FILES, instance=instance)
-#        if form.is_valid():
-#            if id is None:
-#                print('!!!!!!!!!!!!!!!!!!!!!!', datetime.datetime.now())
-#                news_entry = form.save(commit=False)
-#                news_entry.autor = request.user
-#                news_entry.date_pub = datetime.datetime.now()
-#                news_entry.editor = request.user
-#                news_entry.save()
-#                form.save_m2m()
-#                for img in request.FILES.getlist('image_field'):
-#                    ImagesModel.objects.create(news=news_entry, image=img, description=img.name)
-#            else:
-#                news_entry = form.save(commit=False)
-#                news_entry.editor = request.user
-#                news_entry.save()
-#                form.save_m2m()
-#                for img in request.FILES.getlist('image_field'):
-#                    ImagesModel.objects.create(news=news_entry, image=img, description=img.name)
-#        url_referer = request.session['url_referer']
-#        return HttpResponseRedirect(url_referer)
-#    request.session['url_referer'] = request.META.get('HTTP_REFERER')
-#    context['form'] = form
-#    context['news'] = instance
-#    return render(request, 'contentmanagment/addnews.html', context)
-#
-
 @permission_required(['main.publications_editor'], raise_exception=True)
 def newschange(request):
     newslist = PublicationsModel.objects.filter(autor=request.user).order_by('-date_pub')
