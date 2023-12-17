@@ -1,5 +1,6 @@
 {% extends  'base.html' %}
 {% load bootstrap5 %}
+{% load static %}
 {% block title %}
     {% if news.id %}
         Изменение новости
@@ -14,16 +15,17 @@
     {% else %}
         <h1 class="text-center py-3">Добавление новости</h1>
     {% endif %}
-    <form class="form col-10 col-lg-8 mx-auto py-2" method="POST" enctype="multipart/form-data">
+    <form class="form col-10 col-lg-8 mx-auto py-2" id="form-container" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {% bootstrap_form form %}
-        {{ formset.management_form }}
         <p>Медиа-материалы:</p>
         {% for form_image in formset %}
-            <hr>
             {% bootstrap_form form_image %}
         {% endfor %}
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        {% bootstrap_form formset.empty_form %}
+        {{ formset.management_form }}
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end pb-3">
+
             {% if news.id %}
                 <button type="button" class="btn btn-success me-md-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
                     Удалить
@@ -33,6 +35,7 @@
         </div>
 
     </form>
+
     {{ form.media.js }}
 <!--
     <script>

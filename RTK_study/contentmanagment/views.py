@@ -34,7 +34,7 @@ def creantepublication(request, id=None):
             url_referer = request.session['url_referer']
             return HttpResponseRedirect(url_referer)
     request.session['url_referer'] = request.META.get('HTTP_REFERER')
-    context = {'form': form, 'formset': formset}
+    context = {'form': form, 'formset': formset, 'news': order_instance}
     return render(request, template_name, context)
 
 
