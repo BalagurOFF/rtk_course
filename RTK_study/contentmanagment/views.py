@@ -18,15 +18,16 @@ User = get_user_model()
 def creantepublication(request, id=None):
     template_name = 'contentmanagment/addnews.html'
     order_instance = PublicationsModel()
-    if id:
+    if id is not None:
         order_instance = PublicationsModel.objects.get(pk=id)
     form = AddPublicationsForm(request.POST or None, instance=order_instance, prefix='main')
     formset = AddImageFormset(request.POST or None, request.FILES or None, instance=order_instance, prefix='images')
     if request.method == 'POST':
         if form.is_valid() and formset.is_valid():
             news_entry = form.save(commit=False)
-            news_entry.autor = request.user
-            news_entry.date_pub = datetime.datetime.now()
+            if id is None:
+                news_entry.autor = request.user
+                news_entry.date_pub = datetime.datetime.now()
             news_entry.editor = request.user
             news_entry.save()
             form.save_m2m()

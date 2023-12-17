@@ -1,7 +1,7 @@
 from django import forms
+from django.forms import inlineformset_factory
 from main.models import PublicationsModel, TagsModel, ImagesModel
 from django_select2.forms import Select2MultipleWidget, Select2Widget
-from django.forms.models import inlineformset_factory
 
 
 class MultipleFileInput(forms.ClearableFileInput):
@@ -23,7 +23,7 @@ class MultipleFileField(forms.FileField):
 
 
 class AddPublicationsForm(forms.ModelForm):
-    image_field = MultipleFileField(label = 'Медиа-материалы')
+#    image_field = MultipleFileField(label = 'Медиа-материалы')
 
     class Meta:
         model = PublicationsModel
@@ -52,3 +52,16 @@ class TagsForm(forms.ModelForm):
         widgets = {
             'description': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+
+class ImageForm(forms.ModelForm):
+    class Meta:
+        model = ImagesModel
+        fields = ['image', 'description']
+        labels = {
+            'image': 'Изображение',
+            'description': 'Описание',
+        }
+
+
+AddImageFormset = inlineformset_factory(PublicationsModel, ImagesModel, form=ImageForm, fields=['image', 'description'], extra=1)
