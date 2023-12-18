@@ -1,9 +1,9 @@
 from django.contrib.auth import logout, authenticate, login, get_user_model, update_session_auth_hash
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import PasswordChangeForm, AdminPasswordChangeForm
-from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 from .forms import *
+from django.contrib.auth.models import Group, Permission
 
 # from django.contrib.auth.forms import *
 
@@ -13,7 +13,12 @@ User = get_user_model()
 
 def registration(request):
     if request.method == 'POST':
-        print(request.POST)
+        group_reader, create_group = Group.objects.get_or_create(name="Readers")
+        if create_group:
+            edit_profile = Permission.objects.get(codename="edit_profile")
+            add_comments = Permission.objects.get(codename="add_comments")
+            group_reader.permissions.add(edit_profile, add_comments)
+            group_reader.save()
         if request.user.is_authenticated:
             if request.user.has_perm('user.user_administration'):
                 form = AdminRegistrationForm(request.POST)
@@ -28,6 +33,7 @@ def registration(request):
             if password1 == password2:
                 user = form.save()
                 form.save_m2m()
+                user.groups.add(group_reader)
                 if request.user.is_authenticated and request.user.has_perm('user.user_administration'):
                     return redirect('users:listusers', permanent=True)
                 else:

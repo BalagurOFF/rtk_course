@@ -1,0 +1,17 @@
+body {
+  min-height: 100vh;
+  position: relative;
+  margin: 0;
+  padding-bottom: 55px; 
+  box-sizing: border-box;
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  height: 57px;
+}
+
+.pagination.page-item.active {
+  bg-color: #000000;
+}
