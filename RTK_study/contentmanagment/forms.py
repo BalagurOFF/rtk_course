@@ -1,6 +1,6 @@
 from django import forms
 from main.models import PublicationsModel, TagsModel, ImagesModel
-from django_select2.forms import Select2MultipleWidget, Select2Widget
+from django_select2.forms import Select2MultipleWidget
 from django.forms.models import inlineformset_factory
 
 
