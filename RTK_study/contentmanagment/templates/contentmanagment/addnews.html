@@ -27,13 +27,10 @@
         <div id="formset" data-formset-prefix="{{ formset.prefix }}">
             {{ formset.management_form }}
             <div data-formset-body>
-                <!-- New forms will be inserted in here -->
                 {% for form_image in formset %}
-
                     <div data-formset-form>
                         <hr class="py-1">
                         {% bootstrap_form form_image %}
-<!--                        <button type="button" class="btn btn-success" data-formset-delete-button>Delete form</button> -->
                     </div>
                 {% endfor %}
             </div>

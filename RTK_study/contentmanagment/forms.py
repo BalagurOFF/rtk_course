@@ -31,7 +31,7 @@ class AddPublicationsForm(forms.ModelForm):
 
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'text': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
+            'text': forms.Textarea(attrs={'class': 'form-control', 'rows': '10'}),
             'tags': Select2MultipleWidget(),
             'show_news': forms.CheckboxInput()
         }
