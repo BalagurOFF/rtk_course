@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django_bootstrap_icons',
     'debug_toolbar',
     'jquery',
+    'djangoformsetjs',
 ]
 
 MIDDLEWARE = [

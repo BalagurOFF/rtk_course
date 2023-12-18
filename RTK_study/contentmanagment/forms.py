@@ -23,7 +23,7 @@ class MultipleFileField(forms.FileField):
 
 
 class AddPublicationsForm(forms.ModelForm):
-    image_field = MultipleFileField(label = 'Медиа-материалы')
+    #image_field = MultipleFileField(label = 'Медиа-материалы')
 
     class Meta:
         model = PublicationsModel
@@ -64,4 +64,4 @@ class ImageForm(forms.ModelForm):
         }
 
 
-AddImageFormset = inlineformset_factory(PublicationsModel, ImagesModel, form=ImageForm, fields=['image', 'description'], extra=1)
+AddImageFormset = inlineformset_factory(PublicationsModel, ImagesModel, form=ImageForm, fields=['image', 'description'], extra=0)

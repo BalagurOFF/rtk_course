@@ -1,6 +1,10 @@
 {% extends  'base.html' %}
 {% load bootstrap5 %}
 {% load static %}
+{% load formset_tags %}
+{% block head %}
+    <script src="{% static 'js/jquery.formset.js' %}"></script>
+{% endblock head %}
 {% block title %}
     {% if news.id %}
         Изменение новости
@@ -19,11 +23,54 @@
         {% csrf_token %}
         {% bootstrap_form form %}
         <p>Медиа-материалы:</p>
-        {% for form_image in formset %}
+
+        <div id="formset" data-formset-prefix="{{ formset.prefix }}">
+            {{ formset.management_form }}
+            <div data-formset-body>
+                <!-- New forms will be inserted in here -->
+                {% for form_image in formset %}
+
+                    <div data-formset-form>
+                        <hr class="py-1">
+                        {% bootstrap_form form_image %}
+<!--                        <button type="button" class="btn btn-success" data-formset-delete-button>Delete form</button> -->
+                    </div>
+                {% endfor %}
+            </div>
+
+        <!-- The empty form template. By wrapping this in a <script> tag, the
+        __prefix__ placeholder can easily be replaced in both attributes and
+        any scripts -->
+        <script type="form-template" data-formset-empty-form>
+            {% escapescript %}
+
+                <div data-formset-form>
+                    <hr class="py-1">
+                    {% bootstrap_form formset.empty_form %}
+<!--                    <button type="button" class="btn btn-success" data-formset-delete-button>Delete form</button> -->
+                </div>
+            {% endescapescript %}
+        </script>
+
+        <hr class="py-1">
+        <!-- This button will add a new form when clicked -->
+        <button type="button" class="btn btn-success" data-formset-add>Добавить медиа-материал</button>
+<!--        <input type="button" class="btn btn-success" value="Add another" data-formset-add> -->
+
+        <script>jQuery(function($) {
+            $("#formset").formset({
+                animateForms: true
+            });
+        });</script>
+    </div>
+
+<!--
+       {% for form_image in formset %}
             {% bootstrap_form form_image %}
         {% endfor %}
         {% bootstrap_form formset.empty_form %}
         {{ formset.management_form }}
+-->
         <div class="d-grid gap-2 d-md-flex justify-content-md-end pb-3">
 
             {% if news.id %}
@@ -37,6 +84,7 @@
     </form>
 
     {{ form.media.js }}
+
 <!--
     <script>
         $('.select2').select2();
