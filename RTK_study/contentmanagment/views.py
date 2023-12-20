@@ -15,7 +15,7 @@ User = get_user_model()
 
 
 @permission_required(['main.publications_editor'], raise_exception=True)
-def creantepublication(request, id=None):
+def createpublication(request, id=None):
     template_name = 'contentmanagment/addnews.html'
     order_instance = PublicationsModel()
     if id is not None:
@@ -49,7 +49,9 @@ def newschange(request):
 @permission_required(['main.publications_editor', 'main.main_publications_editor'], raise_exception=True)
 def removenews(request, news_id):
     PublicationsModel.objects.filter(id=news_id).delete()
-    return redirect('contentmanagment:news-list', permanent=True)
+    url_redirect = request.session['url_referer']
+    print(url_redirect)
+    return redirect(url_redirect, permanent=True)
 
 
 @permission_required(['main.tags_editor'], raise_exception=True)

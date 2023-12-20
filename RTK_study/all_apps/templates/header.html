@@ -16,7 +16,7 @@
                             <a class="dropdown-item" href="{% url 'contentmanagment:news-list' %}">Мои публикации</a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{% url 'contentmanagment:creantepublication' %}">Добавить новость</a>
+                            <a class="dropdown-item" href="{% url 'contentmanagment:createpublication' %}">Добавить новость</a>
                         </li>
                     {% endif %}
                     {% if perms.main.tags_editor %}
@@ -24,7 +24,7 @@
                             <a class="dropdown-item" href="{% url 'contentmanagment:tags' %}">Тэги новостей</a>
                         </li>
                     {% endif %}
-                    {% if perms.main.main_news_editor %}
+                    {% if perms.main.main_publications_editor %}
                         <li>
                             <a class="dropdown-item" href="{% url 'contentmanagment:admin-newslist' %}">Публикации пользователей</a>
                         </li>

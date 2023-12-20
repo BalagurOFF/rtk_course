@@ -12,9 +12,9 @@
     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
         {% if customer %}
             <a class="btn btn-success me-md-2" href="{% if customer == user %}{% url 'users:resetpassword' %}{% else %}{% url 'users:resetpassword' customer.id %}{% endif %}" role="button">Изменить пароль</a>
-            <button type="button" class="btn btn-success me-md-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                Удалить пользователя
-            </button>
+                <button type="button" class="btn btn-success me-md-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Удалить пользователя
+                </button>
         {% endif %}
         {% bootstrap_button "Изменить данные" button_type="submit" button_class="btn-success float-end" %}
     </div>

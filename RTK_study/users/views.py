@@ -127,12 +127,15 @@ def listusers(request):
     return render(request, 'users/listusers.html', context)
 
 
-@permission_required('users.user_administration', raise_exception=True)
+@login_required()
 def removeuser(request, id=None):
     if id is not None:
-        entry = User.objects.filter(id=id)
-        entry.delete()
-    return redirect('users:listusers', permanent=True)
+        if (id == request.user.id and request.user.has_perm('users.edit_profile')) or request.user.has_perm('users.user_administration'):
+            User.objects.filter(id=id).update(is_active=False)
+    if request.user.has_perm('users.user_administration'):
+        return redirect('users:listusers', permanent=True)
+    else:
+        return redirect('main:news', permanent=True)
 
 
 @permission_required('users.change_group', raise_exception=True)
