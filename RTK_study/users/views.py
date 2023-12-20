@@ -138,14 +138,14 @@ def removeuser(request, id=None):
         return redirect('main:news', permanent=True)
 
 
-@permission_required('users.change_group', raise_exception=True)
+@permission_required('auth.change_group', raise_exception=True)
 def listgroups(request):
     groups = Group.objects.all()
     context = {'groups': groups}
     return render(request, 'users/listgroups.html', context)
 
 
-@permission_required('users.change_group', raise_exception=True)
+@permission_required('auth.change_group', raise_exception=True)
 def addgroup(request, id=None):
     if request.method == 'POST':
         if id is not None:
@@ -167,7 +167,7 @@ def addgroup(request, id=None):
     return render(request, 'users/addgroup.html', context)
 
 
-@permission_required('users.change_group', raise_exception=True)
+@permission_required('auth.change_group', raise_exception=True)
 def removegroup(request, id=None):
     if id is not None:
         entry = Group.objects.filter(id=id)
