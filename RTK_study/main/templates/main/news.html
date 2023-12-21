@@ -14,7 +14,7 @@
         {% for news in newslist.object_list %}
         <div class="col">
             <div class="card h-100">
-                <img src="{{ news.imagesmodel_set.first.image.url }}" class="card-img-top" alt="{{ news.imagesmodel_set.first.description }}" width="250px">
+                <img src="{{ news.imagesmodel_set.first.image_medium.url }}" class="card-img-top" alt="{{ news.imagesmodel_set.first.description }}" width="250px">
                 <div class="card-body ">
                     <h6 class="card-text">{{ news.title|truncatewords:10 }}</h6>
 
@@ -33,7 +33,7 @@
         {% include 'render_pagination.html' with pagination=newslist %}
     </div>
     {% else %}
-        <h4>Новости не найдены</h4>
+        <h3 class="text-center pt-5">Новости не найдены</h3>
     {% endif %}
 </div>
 {% endblock content %}

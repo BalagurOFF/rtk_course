@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill, ResizeToFit
 
 User = get_user_model()
 
@@ -42,7 +44,7 @@ class PublicationsModel(models.Model):
         ]
 
     def __str__(self):
-        return self.name
+        return self.title
 
     def get_absolute_url(self):
         return reverse('main:newsFull', kwargs={'id': self.id})
@@ -88,6 +90,17 @@ class ImagesModel(models.Model):
     news = models.ForeignKey(PublicationsModel, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='news/%Y%m%d/', max_length=200)
     description = models.CharField(max_length=200, blank=True)
+    image_big = ImageSpecField(
+        source="image", processors=[ResizeToFit(1024, 768)],
+        format='JPEG', options={'quality': 95})
+    image_medium = ImageSpecField(
+        source="image", processors=[ResizeToFit(400, 300)],
+        format='JPEG', options={'quality': 95})
+    image_small = ImageSpecField(
+        source="image", processors=[ResizeToFit(60, 45)],
+        format='JPEG', options={'quality': 95})
+
+
 
     class Meta:
         verbose_name_plural = 'Медиа-материалы'

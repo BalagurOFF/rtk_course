@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'jquery',
     'djangoformsetjs',
+    'captcha',
+    'django_addanother',
 ]
 
 MIDDLEWARE = [
@@ -144,6 +146,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CAPTCHA_FONT_SIZE = 35
 
 BOOTSTRAP5 = {
 

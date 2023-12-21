@@ -5,25 +5,55 @@
 {% endblock title %}
 
 {% block content %}
+
+    <script type="text/javascript">
+        function tableSearch() {
+            var phrase = document.getElementById('search-text');
+            var table = document.getElementById('publication-table');
+            var regPhrase = new RegExp(phrase.value, 'i');
+            var flag = false;
+            for (var i = 1; i < table.rows.length; i++) {
+                flag = false;
+                for (var j = table.rows[i].cells.length - 1; j >= 0; j--) {
+                    flag = regPhrase.test(table.rows[i].cells[j].innerHTML);
+                    if (flag) break;
+                    }
+                if (flag) {
+                    table.rows[i].style.display = "";
+                } else {
+                    table.rows[i].style.display = "none";
+                    }
+
+            }
+        }
+    </script>
+
+    {% if newslist %}
     <h3 class="text-center py-3">Публикации:</h3>
     <div class="container col-12 col-md-10">
-    <table class="table table-striped">
+        <input class="form-control my-2" type="text" placeholder="Текст заголовка новости" id="search-text" onkeyup="tableSearch()" >
+    </div>
+    <div class="container col-12 col-md-10">
+    <table class="table table-striped" id="publication-table">
         <thead>
           <tr>
-            <th scope="col"></th>
-            <th scope="col">Публикация</th>
-            <th scope="col"></th>
+            <th scope="col" width="45">№</th>
+            <th scope="col" width="65"></th>
+            <th scope="col" class="mx-auto text-center">Публикация</th>
           </tr>
         </thead>
         <tbody>
         {% for news in newslist %}
-            <tr class="my-auto align-items-center">
+            <tr class="my-auto align-items-center" style="transform: rotate(0);">
                 <th scope="row" class="my-auto">{{ forloop.counter }}</th>
-                <td class="my-auto align-items-center">{{ news.title }}</td>
-                <td class="my-auto text-end"><a class="btn btn-success my-0 py-1" href="{% url 'contentmanagment:createpublication' news.id %}">{% bs_icon 'pencil-fill' size='1.3em' %} </a></td>
+                <td class="my-auto align-items-center"><img src="{{ news.imagesmodel_set.first.image_small.url }}"></td>
+                <td class="my-auto align-items-center"><a class="link-dark text-decoration-none stretched-link" href="{% url 'contentmanagment:createpublication' news.id %}">{{ news.title }}</a></td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+    {% else %}
+        <h3 class="text-center pt-4">Вы еще не добавили ни одной статьи</h3>
+    {% endif %}
 </div>
 {% endblock content %}

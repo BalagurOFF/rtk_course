@@ -20,14 +20,15 @@ def about(request):
 
 
 def contacts(request):
-    if request.method == 'POST':
-        form = ContactForm(request.POST)
-        if form.is_valid():
-            form.save()
     if request.user.is_authenticated:
         form = ContactForm(initial={"sender": request.user.get_full_name(), "contact": request.user.email})
     else:
         form = ContactForm()
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('main:news', permanent=True)
     return render(request, 'main/contacts.html', {'form': form})
 
 

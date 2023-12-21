@@ -1,25 +1,20 @@
 from django import forms
+from django.urls import reverse_lazy
+from django_addanother.widgets import AddAnotherWidgetWrapper
 from main.models import PublicationsModel, TagsModel, ImagesModel
 from django_select2.forms import Select2MultipleWidget
 from django.forms.models import inlineformset_factory
+from string import Template
+from django.utils.safestring import mark_safe
+from django.conf import settings
+from django_addanother.contrib.select2 import Select2AddAnother
 
 
-class MultipleFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True
-
-
-class MultipleFileField(forms.FileField):
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault("widget", MultipleFileInput())
-        super().__init__(*args, **kwargs)
-
-    def clean(self, data, initial=None):
-        single_file_clean = super().clean
-        if isinstance(data, (list, tuple)):
-            result = [single_file_clean(d, initial) for d in data]
-        else:
-            result = single_file_clean(data, initial)
-        return result
+class ImagePreviewWidget(forms.widgets.FileInput):
+    def render(self, name, value, attrs=None, **kwargs):
+        input_html = super().render(name, value, attrs=None, **kwargs)
+        img_html = mark_safe(f'<br>На данный момент: <img src="{settings.MEDIA_URL}{value}" width="60"/>')
+        return f'{input_html}{img_html}'
 
 
 class AddPublicationsForm(forms.ModelForm):
@@ -32,7 +27,7 @@ class AddPublicationsForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'text': forms.Textarea(attrs={'class': 'form-control', 'rows': '10'}),
-            'tags': Select2MultipleWidget(),
+            'tags': Select2MultipleWidget(attrs={'class': 'select2'}),
             'show_news': forms.CheckboxInput()
         }
 
@@ -61,6 +56,9 @@ class ImageForm(forms.ModelForm):
         labels = {
             'image': 'Изображение',
             'description': 'Описание',
+        }
+        widgets = {
+            'image': ImagePreviewWidget,
         }
 
 

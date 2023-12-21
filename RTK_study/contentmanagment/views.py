@@ -7,8 +7,11 @@ from django.db.models.functions import Concat
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import Permission
+from django.views.generic import CreateView
+
 from .forms import AddPublicationsForm, TagsForm, AddImageFormset
 from main.models import PublicationsModel, TagsModel, ImagesModel
+from django_addanother.views import CreatePopupMixin
 
 
 User = get_user_model()
@@ -77,6 +80,13 @@ def tags(request, id=None):
         'id': id,
     }
     return render(request, 'contentmanagment/tags.html', context)
+
+
+class TagCreate(CreatePopupMixin, CreateView):
+    form_class = TagsForm
+    model = TagsModel
+    #fields = ['description']
+    template_name = 'contentmanagment/tag_create.html'
 
 
 @permission_required(['main.main_publications_editor'], raise_exception=True)

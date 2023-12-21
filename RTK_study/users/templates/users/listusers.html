@@ -5,9 +5,35 @@
 {% endblock title %}
 
 {% block content %}
+
+    <script type="text/javascript">
+        function tableSearch() {
+            var phrase = document.getElementById('search-user');
+            var table = document.getElementById('user-table');
+            var regPhrase = new RegExp(phrase.value, 'i');
+            var flag = false;
+            for (var i = 1; i < table.rows.length; i++) {
+                flag = false;
+                for (var j = table.rows[i].cells.length - 1; j >= 0; j--) {
+                    flag = regPhrase.test(table.rows[i].cells[j].innerHTML);
+                    if (flag) break;
+                    }
+                if (flag) {
+                    table.rows[i].style.display = "";
+                } else {
+                    table.rows[i].style.display = "none";
+                    }
+
+            }
+        }
+    </script>
+
     <h3 class="text-center py-3">Пользователи:</h3>
     <div class="container col-12 col-md-10">
-    <table class="table table-striped">
+        <input class="form-control my-2" type="text" placeholder="Фамилия или имя или e-mail пользователя" id="search-user" onkeyup="tableSearch()" >
+    </div>
+    <div class="container col-12 col-md-10">
+    <table class="table table-striped" id="user-table">
         <thead>
           <tr>
             <th scope="col"></th>

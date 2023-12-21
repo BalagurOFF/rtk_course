@@ -5,6 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, User
 from django.contrib.auth.models import Group
 from django.core.validators import MinLengthValidator
 from django_select2.forms import Select2MultipleWidget
+from captcha.fields import CaptchaField
 
 
 class LoginUserForm(AuthenticationForm):
@@ -40,6 +41,7 @@ class AdminRegistrationForm(UserCreationForm):
 
 
 class RegistrationForm(AdminRegistrationForm):
+    captcha = CaptchaField(label='Введите код с картинки: ')
     class Meta(AdminRegistrationForm.Meta):
         exclude = ['groups']
 

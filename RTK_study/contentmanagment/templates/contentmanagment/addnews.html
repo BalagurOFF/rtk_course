@@ -61,13 +61,6 @@
         });</script>
     </div>
 
-<!--
-       {% for form_image in formset %}
-            {% bootstrap_form form_image %}
-        {% endfor %}
-        {% bootstrap_form formset.empty_form %}
-        {{ formset.management_form }}
--->
         <div class="d-grid gap-2 d-md-flex justify-content-md-end pb-3">
 
             {% if news.id %}
@@ -80,13 +73,13 @@
 
     </form>
 
-    {{ form.media.js }}
+<!--    {{ form.media.js }} -->
 
-<!--
+
     <script>
         $('.select2').select2();
     </script>
--->
+
     {% if news.id %}
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

@@ -8,6 +8,7 @@ urlpatterns = [
     path('removenews/<int:news_id>/', views.removenews, name='removeNews'),
     path('tags/', views.tags, name='tags'),
     path('tags/<int:id>/', views.tags, name='tags'),
+    path('tagcreate/', views.TagCreate.as_view(), name='tag_create'),
     path('removetag/<int:id>/', views.removetag, name='removetag'),
     path('adminnewslist/', views.administratenews, name='admin-newslist'),
 ]
