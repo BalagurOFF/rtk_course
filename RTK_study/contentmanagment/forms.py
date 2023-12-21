@@ -14,8 +14,10 @@ class ImagePreviewWidget(forms.widgets.FileInput):
     def render(self, name, value, attrs=None, **kwargs):
         input_html = super().render(name, value, attrs=None, **kwargs)
         img_html = mark_safe(f'<br>На данный момент: <img src="{settings.MEDIA_URL}{value}" width="60"/>')
-        return f'{input_html}{img_html}'
-
+        if value:
+            return f'{input_html}{img_html}'
+        else:
+            return f'{input_html}'
 
 class AddPublicationsForm(forms.ModelForm):
     #image_field = MultipleFileField(label = 'Медиа-материалы')
