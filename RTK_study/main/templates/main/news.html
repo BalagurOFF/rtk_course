@@ -30,7 +30,7 @@
 
     </div>
     <div class="d-flex align-items-center justify-content-center py-2">
-        {% include 'render_pagination.html' with pagination=newslist %}
+        {% include 'render_pagination.html' with pagination=newslist search=search %}
     </div>
     {% else %}
         <h3 class="text-center pt-5">Новости не найдены</h3>

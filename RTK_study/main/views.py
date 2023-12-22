@@ -48,21 +48,22 @@ class ContactMessageDetail(PermissionRequiredMixin, DetailView):
 
 
 def news(request):
-    if request.method == 'POST':
-        search_string = request.POST.get('search_string')
+    print('!!!!!!!', request.GET)
+    if request.GET.get('search'):
+        search = request.GET.get('search')
         paginator = Paginator(PublicationsModel.objects.filter(Q(show_news = True) &
                                                        (
-                                                            Q(title__icontains=search_string) |
-                                                            Q(text__icontains=search_string) |
-                                                            Q(autor__last_name__icontains=search_string) |
-                                                            Q(autor__first_name__icontains=search_string) |
-                                                            Q(tags__description__icontains=search_string)
+                                                            Q(title__icontains=search) |
+                                                            Q(text__icontains=search) |
+                                                            Q(autor__last_name__icontains=search) |
+                                                            Q(autor__first_name__icontains=search) |
+                                                            Q(tags__description__icontains=search)
                                                        )
         ).annotate(comments=Count('publicationscommentsmodel', distinct=True),
                     newsautor = Concat(F('autor__last_name'), Value(' '), F('autor__first_name'), output_field=CharField())).order_by('-date_pub')[:600], 12)
         page_number = request.GET.get('page')
         newslist = paginator.get_page(page_number)
-        context = {'newslist': newslist}
+        context = {'newslist': newslist, 'search': search}
     else:
         paginator = Paginator(PublicationsModel.objects.filter(show_news = True).annotate(comments=Count('publicationscommentsmodel', distinct=True),
                                                          newsautor = Concat(F('autor__last_name'), Value(' '), F('autor__first_name'), output_field=CharField())).order_by('-date_pub')[:600], 12)
@@ -74,7 +75,7 @@ def news(request):
 
 def new_full(request, id):
     news_full = PublicationsModel.objects.select_related('autor').get(pk=id)
-    comments = news_full.publicationscommentsmodel_set.select_related('user').values('date_comment', 'text', 'user__first_name', 'user__last_name', 'show_comment')
+    comments = news_full.publicationscommentsmodel_set.select_related('user').values('id', 'date_comment', 'text', 'user__first_name', 'user__last_name', 'show_comment')
     news_full.text = news_full.text.split('\r\n')
     last_news = PublicationsModel.objects.order_by('-date_pub').all().values('id', 'title')
     form = AddCommentForm()
@@ -105,12 +106,12 @@ def handler403(request, exception):
 
 @permission_required(['moderation'], raise_exception=True)
 def moderation(request):
-    print(request.POST)
+    print('!!!!!!!!', request.POST['comment'])
     if request.method == 'POST':
         comment = request.POST['comment']
         if request.POST['status'] == 'true':
             status = True
         else:
             status = False
-        PublicationsCommentsModel.objects.filter(id=comment).update(show_comment=status)
-    return HttpResponse(None)
+        PublicationsCommentsModel.objects.filter(pk=comment).update(show_comment=status)
+    return HttpResponse('')

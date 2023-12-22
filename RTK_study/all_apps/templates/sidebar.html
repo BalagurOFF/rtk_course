@@ -10,9 +10,8 @@
         <a class="btn btn-success mt-3 col-12 text-start" href="{% url 'main:contacts' %}">Связаться с нами</a>
       </div>
       <div class="container mt-3">
-        <form action="{% url 'main:news' %}" class="d-flex justify-content-end" method="POST">
-          {% csrf_token %}
-          <input class="form-control me-2" type="search" placeholder="Найти" aria-label="Search" name="search_string" title="Поиск по содержанию строки в имени новости, полном тексте, авторе или тэгах">
+        <form action="{% url 'main:news' %}" class="d-flex justify-content-end" method="GET">
+          <input class="form-control me-2" type="search" placeholder="Найти" aria-label="Search" name="search" title="Поиск по содержанию строки в имени новости, полном тексте, авторе или тэгах">
           <button class="btn btn-success" type="submit">Поиск</button>
         </form>
       </div>
