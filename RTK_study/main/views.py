@@ -106,7 +106,6 @@ def handler403(request, exception):
 
 @permission_required(['moderation'], raise_exception=True)
 def moderation(request):
-    print('!!!!!!!!', request.POST['comment'])
     if request.method == 'POST':
         comment = request.POST['comment']
         if request.POST['status'] == 'true':
