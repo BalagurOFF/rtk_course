@@ -17,3 +17,9 @@ db.sqlite3-journal
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
 # in your Git repository. Update and uncomment the following line accordingly.
 # <django-project-name>/staticfiles/
+/RTK_study/RTK_study/.env
+/0001_initial.py
+/0002_alter_captchastore_id.py
+/RTK_study/icon_cache/arrow-clockwise_1.3em_None_None.svg
+/RTK_study/icon_cache/arrow-clockwise_None_None_None.svg
+/models.py
