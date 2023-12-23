@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm, PasswordChangeForm
 from .models import PublicationsCommentsModel, ContactModel
-from captcha.fields import CaptchaField
+from hcaptcha.fields import hCaptchaField
 
 
 class AddCommentForm(forms.ModelForm):
@@ -19,7 +19,7 @@ class AddCommentForm(forms.ModelForm):
 
 
 class ContactForm(forms.ModelForm):
-    captcha = CaptchaField(label='Введите код с картинки: ')
+    captcha = hCaptchaField(label='Подтвердите что вы не робот:')
     class Meta:
         model = ContactModel
         fields = ['sender', 'contact', 'message']

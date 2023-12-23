@@ -14,21 +14,5 @@
         {% bootstrap_button "Отправить сообщение" button_type="submit" button_class="btn-success float-end" %}
     </form>
 </div>
-<script>
-     //Нажмите Обновить проверочный код.
-    $(function () {
-        $('.captcha').css({
-            'cursor': 'pointer'
-        });
-        //  обновление ajax
-        $('.captcha').click(function () {
-            console.log('click');
-            $.get("{% url 'captcha-refresh' %}",
-                function (result) {
-                    $('.captcha').attr('src', result['image_url']);
-                    $('#id_captcha_0').val(result['key'])
-                });
-        });
-    })
-</script>
+
 {% endblock content %}

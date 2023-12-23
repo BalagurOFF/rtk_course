@@ -28,8 +28,6 @@ urlpatterns = [
     path('', include(('main.urls', 'main'), namespace='main')),
     path('users/', include(('users.urls', 'users'), namespace='users')),
     path('contentmanagment/', include(('contentmanagment.urls', 'contentmanagment'), namespace='contentmanagment')),
-    path('captcha/', include('captcha.urls')),
-
 ]
 if bool(settings.DEBUG):
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

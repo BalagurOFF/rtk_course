@@ -48,8 +48,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'jquery',
     'djangoformsetjs',
-    'captcha',
-    'django_addanother',
+    'hcaptcha',
 ]
 
 MIDDLEWARE = [
@@ -147,7 +146,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CAPTCHA_FONT_SIZE = 35
+HCAPTCHA_SITEKEY = '18d1cca7-38cc-4a2d-b4fc-cfd7aba49ac0'
+HCAPTCHA_SECRET = 'ES_bf357b444d0d4752b85a46d4546fbc12'
 
 BOOTSTRAP5 = {
 

@@ -5,12 +5,13 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, User
 from django.contrib.auth.models import Group
 from django.core.validators import MinLengthValidator
 from django_select2.forms import Select2MultipleWidget
-from captcha.fields import CaptchaField
+from hcaptcha.fields import hCaptchaField
 
 
 class LoginUserForm(AuthenticationForm):
     username = forms.CharField(label='Имя пользователя', widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    captcha = hCaptchaField(label='Подтвердите что вы не робот:')
 
 
 class AdminRegistrationForm(UserCreationForm):
@@ -41,7 +42,7 @@ class AdminRegistrationForm(UserCreationForm):
 
 
 class RegistrationForm(AdminRegistrationForm):
-    captcha = CaptchaField(label='Введите код с картинки: ')
+    captcha = hCaptchaField(label='Подтвердите что вы не робот:')
     class Meta(AdminRegistrationForm.Meta):
         exclude = ['groups']
 
