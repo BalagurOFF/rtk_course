@@ -50,13 +50,12 @@ class RegistrationForm(AdminRegistrationForm):
 class AdminCustumUserChangeForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
-        fields = ['username', 'email', 'first_name', 'last_name', 'is_active', 'groups']
+        fields = ['username', 'email', 'first_name', 'last_name', 'groups']
         labels = {
             'username': 'Имя пользователя',
             'email': 'Email',
             'first_name': 'Имя',
             'last_name': 'Фамилия',
-            'is_active': 'Активный пользователь',
             'groups': 'Группы пользователя',
         }
         widgets = {
@@ -70,7 +69,7 @@ class AdminCustumUserChangeForm(forms.ModelForm):
 
 class CustumUserChangeForm(AdminCustumUserChangeForm):
     class Meta(AdminCustumUserChangeForm.Meta):
-        exclude = ['is_active', 'groups']
+        exclude = ['groups']
         widgets = {
             'username': forms.TextInput(attrs={'readonly': True}),
         }
