@@ -91,14 +91,14 @@ class ImagesModel(models.Model):
     image = models.ImageField(upload_to='news/%Y%m%d/', max_length=200)
     description = models.CharField(max_length=200, blank=True)
     image_big = ImageSpecField(
-        source="image", processors=[ResizeToFit(1024, 768)],
-        format='JPEG', options={'quality': 95})
+        source="image", processors=[ResizeToFit(1024, 576, mat_color=(240, 240, 240))],
+        format='WEBP', options={'quality': 95})
     image_medium = ImageSpecField(
-        source="image", processors=[ResizeToFit(400, 300)],
-        format='JPEG', options={'quality': 95})
+        source="image", processors=[ResizeToFit(512, 288, mat_color=(240, 240, 240))],
+        format='WEBP', options={'quality': 95})
     image_small = ImageSpecField(
-        source="image", processors=[ResizeToFit(60, 45)],
-        format='JPEG', options={'quality': 95})
+        source="image", processors=[ResizeToFit(64, 36, mat_color=(240, 240, 240))],
+        format='WEBP', options={'quality': 95})
 
 
 

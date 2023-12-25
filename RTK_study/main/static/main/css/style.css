@@ -18,12 +18,13 @@ footer {
 
 .wrapper {
   position: relative;
-  padding-top: 62.5%; /* 16:10 Aspect Ratio */
+  padding-top: 56.25%;
 }
 .wrapper img {
   position: absolute;
   left: 0;
   top: 0;
-  width: 100%;
-  height: auto;
+  margin: auto;
+  max-inline-size: 100%;
+  block-size: auto;
 }
